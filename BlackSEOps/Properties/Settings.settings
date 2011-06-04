@@ -1,0 +1,202 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BlackSEOps.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Proxies" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;98.249.165.93:2479&lt;/string&gt;
+  &lt;string&gt;98.129.220.124:3128&lt;/string&gt;
+  &lt;string&gt;96.4.198.192:80&lt;/string&gt;
+  &lt;string&gt;95.142.161.84:80&lt;/string&gt;
+  &lt;string&gt;94.95.196.130:3128&lt;/string&gt;
+  &lt;string&gt;94.236.54.7:80&lt;/string&gt;
+  &lt;string&gt;94.236.54.5:80&lt;/string&gt;
+  &lt;string&gt;94.198.47.6:3128&lt;/string&gt;
+  &lt;string&gt;94.100.89.220:80&lt;/string&gt;
+  &lt;string&gt;93.187.120.18:3128&lt;/string&gt;
+  &lt;string&gt;92.62.55.63:8080&lt;/string&gt;
+  &lt;string&gt;92.46.50.154:3128&lt;/string&gt;
+  &lt;string&gt;89.189.85.43:80&lt;/string&gt;
+  &lt;string&gt;89.189.84.169:80&lt;/string&gt;
+  &lt;string&gt;88.84.131.73:3128&lt;/string&gt;
+  &lt;string&gt;88.198.23.37:8080&lt;/string&gt;
+  &lt;string&gt;86.122.120.6:80&lt;/string&gt;
+  &lt;string&gt;82.137.195.138:8080&lt;/string&gt;
+  &lt;string&gt;80.193.72.145:80&lt;/string&gt;
+  &lt;string&gt;77.21.21.112:80&lt;/string&gt;
+  &lt;string&gt;75.151.116.33:8118&lt;/string&gt;
+  &lt;string&gt;74.213.166.67:80&lt;/string&gt;
+  &lt;string&gt;72.18.217.98:3128&lt;/string&gt;
+  &lt;string&gt;72.167.181.9:80&lt;/string&gt;
+  &lt;string&gt;71.41.204.228:80&lt;/string&gt;
+  &lt;string&gt;71.227.118.46:8080&lt;/string&gt;
+  &lt;string&gt;70.86.166.34:3128&lt;/string&gt;
+  &lt;string&gt;70.124.10.219:8085&lt;/string&gt;
+  &lt;string&gt;69.59.90.86:2479&lt;/string&gt;
+  &lt;string&gt;69.162.127.34:3128&lt;/string&gt;
+  &lt;string&gt;69.161.64.176:2479&lt;/string&gt;
+  &lt;string&gt;69.141.58.197:8085&lt;/string&gt;
+  &lt;string&gt;69.136.230.175:8085&lt;/string&gt;
+  &lt;string&gt;68.96.30.25:8080&lt;/string&gt;
+  &lt;string&gt;68.68.107.60:29505&lt;/string&gt;
+  &lt;string&gt;68.39.206.217:8085&lt;/string&gt;
+  &lt;string&gt;68.233.8.69:80&lt;/string&gt;
+  &lt;string&gt;68.168.96.173:80&lt;/string&gt;
+  &lt;string&gt;67.192.61.164:808&lt;/string&gt;
+  &lt;string&gt;67.11.20.236:8085&lt;/string&gt;
+  &lt;string&gt;66.238.207.247:3128&lt;/string&gt;
+  &lt;string&gt;64.74.246.35:80&lt;/string&gt;
+  &lt;string&gt;64.71.141.148:3128&lt;/string&gt;
+  &lt;string&gt;63.241.168.215:80&lt;/string&gt;
+  &lt;string&gt;62.87.130.13:8080&lt;/string&gt;
+  &lt;string&gt;62.73.5.74:80&lt;/string&gt;
+  &lt;string&gt;61.244.235.34:3128&lt;/string&gt;
+  &lt;string&gt;61.224.223.220:8088&lt;/string&gt;
+  &lt;string&gt;61.180.78.254:8088&lt;/string&gt;
+  &lt;string&gt;60.190.223.54:808&lt;/string&gt;
+  &lt;string&gt;60.10.164.83:808&lt;/string&gt;
+  &lt;string&gt;41.190.16.17:8080&lt;/string&gt;
+  &lt;string&gt;41.134.13.66:8080&lt;/string&gt;
+  &lt;string&gt;24.49.156.155:8085&lt;/string&gt;
+  &lt;string&gt;222.89.92.108:3128&lt;/string&gt;
+  &lt;string&gt;222.77.14.54:80&lt;/string&gt;
+  &lt;string&gt;222.255.239.135:8080&lt;/string&gt;
+  &lt;string&gt;221.238.17.245:8080&lt;/string&gt;
+  &lt;string&gt;221.214.27.253:808&lt;/string&gt;
+  &lt;string&gt;221.214.27.252:808&lt;/string&gt;
+  &lt;string&gt;221.130.7.228:80&lt;/string&gt;
+  &lt;string&gt;221.130.7.226:80&lt;/string&gt;
+  &lt;string&gt;221.130.162.244:80&lt;/string&gt;
+  &lt;string&gt;221.130.13.41:80&lt;/string&gt;
+  &lt;string&gt;221.130.13.233:80&lt;/string&gt;
+  &lt;string&gt;221.130.13.225:80&lt;/string&gt;
+  &lt;string&gt;218.25.99.135:808&lt;/string&gt;
+  &lt;string&gt;218.248.44.216:8080&lt;/string&gt;
+  &lt;string&gt;218.201.21.178:80&lt;/string&gt;
+  &lt;string&gt;218.201.21.177:80&lt;/string&gt;
+  &lt;string&gt;218.201.21.176:80&lt;/string&gt;
+  &lt;string&gt;218.201.21.175:80&lt;/string&gt;
+  &lt;string&gt;218.201.21.158:80&lt;/string&gt;
+  &lt;string&gt;217.111.163.142:80&lt;/string&gt;
+  &lt;string&gt;216.214.134.2:80&lt;/string&gt;
+  &lt;string&gt;216.18.219.98:3128&lt;/string&gt;
+  &lt;string&gt;213.42.178.199:80&lt;/string&gt;
+  &lt;string&gt;213.41.80.9:80&lt;/string&gt;
+  &lt;string&gt;213.230.18.191:80&lt;/string&gt;
+  &lt;string&gt;213.146.149.107:8080&lt;/string&gt;
+  &lt;string&gt;213.137.132.125:8080&lt;/string&gt;
+  &lt;string&gt;213.131.1.102:3124&lt;/string&gt;
+  &lt;string&gt;212.73.111.163:8080&lt;/string&gt;
+  &lt;string&gt;212.45.5.172:3128&lt;/string&gt;
+  &lt;string&gt;212.244.60.45:8080&lt;/string&gt;
+  &lt;string&gt;212.243.72.81:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.233:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.232:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.211:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.210:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.200:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.199:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.198:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.197:80&lt;/string&gt;
+  &lt;string&gt;211.138.124.196:80&lt;/string&gt;
+  &lt;string&gt;210.227.121.34:8888&lt;/string&gt;
+  &lt;string&gt;210.125.84.17:3124&lt;/string&gt;
+  &lt;string&gt;208.96.213.149:80&lt;/string&gt;
+  &lt;string&gt;208.77.151.84:80&lt;/string&gt;
+  &lt;string&gt;208.77.151.82:80&lt;/string&gt;
+  &lt;string&gt;207.249.174.3:80&lt;/string&gt;
+  &lt;string&gt;206.117.37.4:3127&lt;/string&gt;
+  &lt;string&gt;204.236.224.235:80&lt;/string&gt;
+  &lt;string&gt;204.236.160.132:3128&lt;/string&gt;
+  &lt;string&gt;202.189.126.85:3127&lt;/string&gt;
+  &lt;string&gt;202.171.42.7:3128&lt;/string&gt;
+  &lt;string&gt;202.138.180.198:80&lt;/string&gt;
+  &lt;string&gt;201.225.226.68:8080&lt;/string&gt;
+  &lt;string&gt;201.134.185.163:3128&lt;/string&gt;
+  &lt;string&gt;200.96.53.7:8080&lt;/string&gt;
+  &lt;string&gt;200.25.177.58:8080&lt;/string&gt;
+  &lt;string&gt;200.161.247.30:8080&lt;/string&gt;
+  &lt;string&gt;200.119.31.2:8080&lt;/string&gt;
+  &lt;string&gt;199.26.254.69:3127&lt;/string&gt;
+  &lt;string&gt;196.38.158.197:80&lt;/string&gt;
+  &lt;string&gt;196.38.158.196:80&lt;/string&gt;
+  &lt;string&gt;196.12.187.29:8080&lt;/string&gt;
+  &lt;string&gt;195.168.109.60:8080&lt;/string&gt;
+  &lt;string&gt;195.14.0.99:3128&lt;/string&gt;
+  &lt;string&gt;194.79.52.113:80&lt;/string&gt;
+  &lt;string&gt;194.36.10.156:3128&lt;/string&gt;
+  &lt;string&gt;193.191.148.227:3127&lt;/string&gt;
+  &lt;string&gt;193.191.148.149:80&lt;/string&gt;
+  &lt;string&gt;193.171.79.65:80&lt;/string&gt;
+  &lt;string&gt;193.171.69.65:80&lt;/string&gt;
+  &lt;string&gt;190.27.194.90:8080&lt;/string&gt;
+  &lt;string&gt;190.202.107.107:8080&lt;/string&gt;
+  &lt;string&gt;189.21.214.194:8080&lt;/string&gt;
+  &lt;string&gt;187.5.20.236:6588&lt;/string&gt;
+  &lt;string&gt;174.36.178.106:80&lt;/string&gt;
+  &lt;string&gt;174.143.150.83:80&lt;/string&gt;
+  &lt;string&gt;174.142.24.206:3128&lt;/string&gt;
+  &lt;string&gt;174.142.24.203:3128&lt;/string&gt;
+  &lt;string&gt;174.142.24.202:3128&lt;/string&gt;
+  &lt;string&gt;174.142.24.201:3128&lt;/string&gt;
+  &lt;string&gt;174.142.104.57:3128&lt;/string&gt;
+  &lt;string&gt;164.78.252.25:80&lt;/string&gt;
+  &lt;string&gt;164.78.252.110:80&lt;/string&gt;
+  &lt;string&gt;147.83.30.164:3128&lt;/string&gt;
+  &lt;string&gt;146.57.249.99:3128&lt;/string&gt;
+  &lt;string&gt;146.57.249.98:3127&lt;/string&gt;
+  &lt;string&gt;140.114.79.233:3128&lt;/string&gt;
+  &lt;string&gt;138.251.214.78:3128&lt;/string&gt;
+  &lt;string&gt;137.165.1.111:3128&lt;/string&gt;
+  &lt;string&gt;131.247.2.242:3124&lt;/string&gt;
+  &lt;string&gt;131.179.50.70:3127&lt;/string&gt;
+  &lt;string&gt;129.186.205.76:3128&lt;/string&gt;
+  &lt;string&gt;129.105.15.37:3127&lt;/string&gt;
+  &lt;string&gt;128.42.142.42:3124&lt;/string&gt;
+  &lt;string&gt;128.42.142.41:3124&lt;/string&gt;
+  &lt;string&gt;128.112.139.108:3127&lt;/string&gt;
+  &lt;string&gt;125.234.47.218:80&lt;/string&gt;
+  &lt;string&gt;123.202.26.71:9415&lt;/string&gt;
+  &lt;string&gt;122.154.17.148:3128&lt;/string&gt;
+  &lt;string&gt;121.10.120.214:80&lt;/string&gt;
+  &lt;string&gt;118.97.72.37:80&lt;/string&gt;
+  &lt;string&gt;118.70.127.55:8080&lt;/string&gt;
+  &lt;string&gt;118.232.153.177:9415&lt;/string&gt;
+  &lt;string&gt;112.78.196.95:3128&lt;/string&gt;
+  &lt;string&gt;112.4.106.88:808&lt;/string&gt;
+  &lt;string&gt;109.123.84.217:80&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="sPage4BingSEO" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://kreuzerkrieg.dyndns.info/Kreuzerkrieg1.htm</Value>
+    </Setting>
+    <Setting Name="jCount4BingSEO" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="iCount4BingSEO" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="sPage4YahooSEO" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://kreuzerkrieg.dyndns.info/Kreuzerkrieg1.htm</Value>
+    </Setting>
+    <Setting Name="jCount4YahooSEO" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="iCount4YahooSEO" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="sPage4GoogleSEO" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://kreuzerkrieg.dyndns.info/Kreuzerkrieg1.htm</Value>
+    </Setting>
+    <Setting Name="jCount4GoogleSEO" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="iCount4GoogleSEO" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="BuzzWords" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">stock photos kreuzerkrieg</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
