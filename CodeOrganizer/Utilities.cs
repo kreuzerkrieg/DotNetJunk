@@ -8,6 +8,7 @@ using EnvDTE;
 using Microsoft.VisualStudio.VCProjectEngine;
 using Microsoft.VisualStudio.VCCodeModel;
 using System.Text.RegularExpressions;
+using EnvDTE80;
 
 namespace CPPHelpers
 {
@@ -18,6 +19,55 @@ namespace CPPHelpers
             Boolean bRetVal = false;
             VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
             oCurConfig.Rebuild();
+            return bRetVal;
+        }
+
+        public static Boolean CleanCurrentConfiguration(VCProject oProject)
+        {
+            Boolean bRetVal = false;
+            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
+            oCurConfig.Clean();
+            return bRetVal;
+        }
+
+        public static Boolean BuildCurrentConfiguration(VCProject oProject)
+        {
+            Boolean bRetVal = false;
+            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
+            oCurConfig.Build();
+            return bRetVal;
+        }
+
+        public static Boolean LinkCurrentConfiguration(VCProject oProject)
+        {
+            Boolean bRetVal = false;
+            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
+            oCurConfig.Relink();
+            return bRetVal;
+        }
+
+        public static Boolean CompileFile(VCFile oFile)
+        {
+            Boolean bRetVal = false;
+            try
+            {
+                DTE2 oApp = (DTE2)(((Project)oFile.project).DTE);
+                OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
+                OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
+                oOutputWin.Parent.Activate();
+                oPane.Activate();
+                oPane.Clear();
+                VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
+                oCurConfig.Compile(true, true);
+                TextDocument oTD = oPane.TextDocument;
+                EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
+                oTD.Selection.SelectAll();
+                bRetVal = oTD.Selection.Text.Contains(" 0 error");
+            }
+            catch (Exception ex)
+            {
+                return bRetVal;
+            }
             return bRetVal;
         }
 
@@ -211,13 +261,13 @@ namespace CPPHelpers
 
         [DllImport("shlwapi.dll")]
         public static extern bool PathCanonicalize(
-            [Out] StringBuilder dst, 
+            [Out] StringBuilder dst,
             [In] string src
             );
         #endregion
     }
-    
-    public class IncludesKey: IComparable
+
+    public class IncludesKey : IComparable
     {
         public String sInclude;
         public Guid IncludeGUID;

@@ -25,9 +25,6 @@ namespace CPPHelpers
                 return bRetVal;
             try
             {
-                OutputWindow oOutputWin = (OutputWindow)mApplication.Windows.Item(Constants.vsWindowKindOutput).Collection.Item("Output").Object;
-                OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
-
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
                 Utilities.RetrieveIncludes(oFile, ref oIncludes);
 
@@ -38,14 +35,8 @@ namespace CPPHelpers
                     EditPoint oEditPoint = oStartPoint.CreateEditPoint();
                     String sOrigText = oEditPoint.GetText(oCI.EndPoint);
                     oEditPoint.Insert("//");
-                    oPane.Activate();
-                    oPane.Clear();
-                    VCFileConfiguration oCurrConfig = Utilities.GetCurrentFileConfiguration(oFile);
-                    oCurrConfig.Compile(true, true);
-                    TextDocument oTD = oPane.TextDocument;
-                    EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
-                    oTD.Selection.SelectAll();
-                    if (!oTD.Selection.Text.Contains(" 0 error"))
+                   
+                    if (!Utilities.CompileFile(oFile))
                     {
                         oEditPoint.ReplaceText(oStartPoint, "", (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
                     }

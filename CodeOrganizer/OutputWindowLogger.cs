@@ -21,11 +21,11 @@ namespace CodeOrganizer
             mOutputWin = mApplication.ToolWindows.OutputWindow;
             try
             {
-                mPane = mOutputWin.OutputWindowPanes.Item("Helper Output");
+                mPane = mOutputWin.OutputWindowPanes.Item("C++ Helper Output");
             }
             catch (Exception)
             {
-                mPane = mOutputWin.OutputWindowPanes.Add("Helper Output");
+                mPane = mOutputWin.OutputWindowPanes.Add("C++ Helper Output");
             }
         }
 
@@ -39,10 +39,7 @@ namespace CodeOrganizer
 
         public void PrintHeaderMessage(Object oMessage)
         {
-
-            mOutputWin.Parent.Activate();
-            mPane.Activate();
-            mPane.OutputString(Environment.NewLine + "=================================..:: " + oMessage + " ::.=================================" + Environment.NewLine);
+            PrintMessage(Environment.NewLine + "=================================..:: " + oMessage + " ::.=================================" + Environment.NewLine);
         }
 
         public void CloseLog()
