@@ -1,0 +1,9 @@
+.sbas
+
+# visual studio
+*.suo
+*.ncb
+
+# build
+bin/
+obj/
