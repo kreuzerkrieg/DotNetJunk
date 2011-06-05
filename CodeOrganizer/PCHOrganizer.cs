@@ -109,7 +109,7 @@ namespace CPPHelpers
 
                             if (oTmpFI.Exists)
                             {
-                                if (Utilities.IsThirdPartyFile(oTmpFI.DirectoryName, oCurConfig))
+                                if (Utilities.IsThirdPartyFile(oTmpFI.FullName, oCurConfig))
                                 {
                                     arrIncludesToRemove.Add(new KeyValuePair<TextPoint, TextPoint>(oCI.StartPoint, oCI.EndPoint));
                                     if (!arToPCH.Contains(sTmpInclude))
@@ -118,7 +118,10 @@ namespace CPPHelpers
                                     }
                                     break;
                                 }
-
+                                else
+                                {
+                                    break; // File found, not thirdparty
+                                }
                             }
                         }
                     }
