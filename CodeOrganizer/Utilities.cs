@@ -12,7 +12,7 @@ using EnvDTE80;
 
 namespace CPPHelpers
 {
-    class Utilities
+    public static class Utilities
     {
         public static Boolean RebuildCurrentConfiguration(VCProject oProject)
         {
@@ -51,7 +51,7 @@ namespace CPPHelpers
             Boolean bRetVal = false;
             try
             {
-                DTE2 oApp = (DTE2)(((Project)oFile.project).DTE);
+                DTE2 oApp = (DTE2)((((Project)((VCProject)oFile.project).Object)).DTE);
                 OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
                 OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
                 oOutputWin.Parent.Activate();
@@ -117,10 +117,8 @@ namespace CPPHelpers
                         if (!Path.IsPathRooted(sPath))
                             sPath = Path.Combine(oProject.ProjectDirectory, sPath);
 
-                        StringBuilder tmpDir = new StringBuilder();
-                        Utilities.PathCanonicalize(tmpDir, sPath);
+                        String oTmpDir = Utilities.PathCanonicalize(sPath);
 
-                        String oTmpDir = Path.GetDirectoryName(tmpDir.ToString());
                         if (!tmp.ContainsKey(oTmpDir))
                         {
                             tmp.Add(oTmpDir, oTmpDir);
@@ -145,32 +143,35 @@ namespace CPPHelpers
 
         public static Boolean IsThirdPartyFile(String sPath, VCConfiguration oProjConfig)
         {
-            try
-            {
-                StringBuilder dummy = new StringBuilder();
-                StringBuilder dummy1 = new StringBuilder();
-                StringBuilder dummy2 = new StringBuilder();
-                StringBuilder dummy3 = new StringBuilder();
-                StringBuilder dummy4 = new StringBuilder();
-                DirectoryInfo oPathTo3rdParties = new DirectoryInfo(@"D:\ais_test_org_freetext_EWZ\AC_SOURCE\3rdparty\");
-                //use DTE2.Properties("Projects and Solutions", "VC++ Directories")
-                DirectoryInfo oPathToVS1 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)include\"));
-                DirectoryInfo oPathToVS2 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)atlmfc\include\"));
-                DirectoryInfo oPathToVS3 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)PlatformSDK\include\"));
-                DirectoryInfo oPathToVS4 = new DirectoryInfo(oProjConfig.Evaluate(@"$(FrameworkSDKDir)include\"));
-                bool bRetVal = false;
-                bRetVal |= (PathCommonPrefix(sPath, oPathTo3rdParties.FullName, dummy) != 0);
-                bRetVal |= (PathCommonPrefix(sPath, oPathToVS1.FullName, dummy1) != 0);
-                bRetVal |= (PathCommonPrefix(sPath, oPathToVS2.FullName, dummy2) != 0);
-                bRetVal |= (PathCommonPrefix(sPath, oPathToVS3.FullName, dummy3) != 0);
-                bRetVal |= (PathCommonPrefix(sPath, oPathToVS4.FullName, dummy4) != 0);
-                return bRetVal;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Determining if file belongs to third party is failed. Reason: " + ex.Message);
-                return false;
-            }
+             bool bRetVal = false;
+             try
+             {
+                 DirectoryInfo oPathTo3rdParties = new DirectoryInfo(@"f:\Development\AC_SERVER_4_8_1\3rdParty\");
+                 //use DTE2.Properties("Projects and Solutions", "VC++ Directories")
+                 DirectoryInfo oPathToVS1 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)include\"));
+                 DirectoryInfo oPathToVS2 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)atlmfc\include\"));
+                 DirectoryInfo oPathToVS3 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)PlatformSDK\include\"));
+                 DirectoryInfo oPathToVS4 = new DirectoryInfo(oProjConfig.Evaluate(@"$(FrameworkSDKDir)include\"));
+                 StringComparer invICCmp = StringComparer.InvariantCultureIgnoreCase;
+
+                 String dummy = PathCommonPrefix(sPath, oPathTo3rdParties.FullName);
+                 String dummy1 = PathCommonPrefix(sPath, oPathToVS1.FullName);
+                 String dummy2 = PathCommonPrefix(sPath, oPathToVS2.FullName);
+                 String dummy3 = PathCommonPrefix(sPath, oPathToVS3.FullName);
+                 String dummy4 = PathCommonPrefix(sPath, oPathToVS4.FullName);
+
+                 bRetVal |= (invICCmp.Compare(dummy, PathCanonicalize(oPathTo3rdParties.FullName)) == 0);
+                 bRetVal |= (invICCmp.Compare(dummy1, PathCanonicalize(oPathToVS1.FullName)) == 0);
+                 bRetVal |= (invICCmp.Compare(dummy2, PathCanonicalize(oPathToVS2.FullName)) == 0);
+                 bRetVal |= (invICCmp.Compare(dummy3, PathCanonicalize(oPathToVS3.FullName)) == 0);
+                 bRetVal |= (invICCmp.Compare(dummy4, PathCanonicalize(oPathToVS4.FullName)) == 0);
+                 return bRetVal;
+             }
+             catch (Exception ex)
+             {
+                 throw new Exception("Determining if file belongs to third party is failed. Reason: " + ex.Message);
+                 return false;
+             }
             return false;
         }
 
@@ -242,31 +243,26 @@ namespace CPPHelpers
             return false;
         }
 
-        #region Shlwapi functions used internally
-        [DllImport("shlwapi.dll")]
-        public static extern bool PathRelativePathTo(
-             [Out] StringBuilder pszPath,
-             [In] string pszFrom,
-             [In] uint dwAttrFrom,
-             [In] string pszTo,
-             [In] uint dwAttrTo
-        );
+        public static String PathCommonPrefix(String pszFile1, String pszFile2)
+        {
+            StringBuilder dummy = new StringBuilder();
+            SHLWAPI.PathCommonPrefix(PathCanonicalize(pszFile1), PathCanonicalize(pszFile2), dummy);
+            return PathCanonicalize(dummy.ToString());
+        }
 
-        [DllImport("shlwapi.dll")]
-        public static extern Int32 PathCommonPrefix(
-                         [In] string pszFile1,
-                         [In] string pszFile2,
-                         [Out] StringBuilder pszPath
-                    );
+        public static String PathCanonicalize(String pszFile1)
+        {
+            StringBuilder dummy = new StringBuilder();
+            SHLWAPI.PathCanonicalize(dummy, pszFile1 + Path.DirectorySeparatorChar.ToString());
 
-        [DllImport("shlwapi.dll")]
-        public static extern bool PathCanonicalize(
-            [Out] StringBuilder dst,
-            [In] string src
-            );
-        #endregion
+            return Path.GetDirectoryName(dummy.ToString());
+        }
+
+        public static Boolean IsFolder(String path)
+        {
+            return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+        }
     }
-
     public class IncludesKey : IComparable
     {
         public String sInclude;
@@ -314,7 +310,7 @@ namespace CPPHelpers
             }
             else if (rhs.sInclude.ToLowerInvariant().Contains("stdafx.h"))
             {
-                return invICCmp.Compare(lhs.IncludeGUID.ToString(), rhs.IncludeGUID.ToString());
+                return 1;
             }
             else if (invICCmp.Compare(lhs.sInclude, rhs.sInclude) == 0)
             {
@@ -325,5 +321,32 @@ namespace CPPHelpers
                 return invICCmp.Compare(lhs.sInclude, rhs.sInclude);
             }
         }
+    }
+
+    public static class SHLWAPI
+    {
+        #region Shlwapi functions used internally
+        [DllImport("shlwapi.dll")]
+        public static extern bool PathRelativePathTo(
+             [Out] StringBuilder pszPath,
+             [In] string pszFrom,
+             [In] uint dwAttrFrom,
+             [In] string pszTo,
+             [In] uint dwAttrTo
+        );
+
+        [DllImport("shlwapi.dll")]
+        public static extern Int32 PathCommonPrefix(
+                         [In] string pszFile1,
+                         [In] string pszFile2,
+                         [Out] StringBuilder pszPath
+                    );
+
+        [DllImport("shlwapi.dll")]
+        public static extern bool PathCanonicalize(
+            [Out] StringBuilder dst,
+            [In] string src
+            );
+        #endregion
     }
 }
