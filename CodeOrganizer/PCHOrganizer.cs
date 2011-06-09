@@ -134,8 +134,8 @@ namespace CPPHelpers
                     mLogger.PrintMessage("Directive  " + oEditPoint.GetText(oEndPoint) + " removed from " + oFile.Name);
                     oEditPoint.Delete(oEndPoint);
                     oEditPoint.DeleteWhitespace(vsWhitespaceOptions.vsWhitespaceOptionsVertical);
-                   
                 }
+                Utilities.SaveFile((ProjectItem)oFile.Object);
             }
             catch (Exception ex)
             {
