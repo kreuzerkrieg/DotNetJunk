@@ -15,12 +15,6 @@ namespace CPPHelpers
     {
         private Logger mLogger;
         private DTE2 mApplication;
-        private class IncludeStructEx
-        {
-            public VCCodeInclude oInc;
-            public String sFileName;
-            public Boolean bLocalFile;
-        }
 
         public IncludesCanonicalizer(Logger logger, DTE2 oApplication)
         {
@@ -35,32 +29,13 @@ namespace CPPHelpers
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
                 Utilities.RetrieveIncludes(oFile, ref oIncludes);
                 List<IncludeStructEx> arrIncludesToRemove = new List<IncludeStructEx>();
-                String sIncludePattern = ("\\.*#.*include.*(\\<|\\\")(?'FileName'.+)(\\>|\\\")");
+
                 foreach (VCCodeInclude oCI in oIncludes.Values)
                 {
-                    String sIncludeFile = oCI.FullName;
-                    TextPoint oStartPoint = oCI.StartPoint;
-                    EditPoint oEditPoint = oStartPoint.CreateEditPoint();
-                    String sTmpInclude = oEditPoint.GetText(oCI.EndPoint);
-                    Match match = Regex.Match(sTmpInclude, sIncludePattern);
-                    String sIncFullName;
-                    if (match.Success)
+                    IncludeStructEx oInc = null;
+                    Boolean isLocal = Utilities.IsLocalFile(oCI, ref oInc);
+                    if (isLocal && oInc != null)
                     {
-                        sIncFullName = match.Groups["FileName"].Value;
-                        FileInfo oFI = new FileInfo(Path.Combine(Path.GetDirectoryName(oFile.FullPath), sIncFullName));
-                        DirectoryInfo oParentFolder = new DirectoryInfo(Path.GetFullPath(oProject.ProjectDirectory)).Parent;
-                        FileInfo oFIParent = new FileInfo(Path.Combine(oParentFolder.FullName, sIncFullName));
-                        IncludeStructEx oInc = new IncludeStructEx();
-                        oInc.oInc = oCI;
-                        oInc.sFileName = sIncFullName;
-                        if (oFI.Exists || oFIParent.Exists)
-                        {
-                            oInc.bLocalFile = true;
-                        }
-                        else
-                        {
-                            oInc.bLocalFile = false;
-                        }
                         arrIncludesToRemove.Add(oInc);
                     }
                 }

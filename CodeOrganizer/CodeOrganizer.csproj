@@ -14,27 +14,36 @@
     <DeploymentDirectory>.\bin\</DeploymentDirectory>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>.\bin\Debug\</OutputPath>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE;DEBUG;VS2010</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;RUNNING_ON_FW_4</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <IncrementalBuild>false</IncrementalBuild>
     <DocumentationFile>
     </DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
     <OutputPath>.\bin\Release\</OutputPath>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;RUNNING_ON_FW_4</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <IncrementalBuild>false</IncrementalBuild>
     <DocumentationFile>CodeOrganizer.xml</DocumentationFile>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>CodeOrganizer</RootNamespace>
@@ -69,6 +78,7 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IncludesNormalizer.cs" />
     <Compile Include="IncludesRemover.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />

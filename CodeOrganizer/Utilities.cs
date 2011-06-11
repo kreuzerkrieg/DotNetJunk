@@ -14,6 +14,7 @@ namespace CPPHelpers
 {
     public static class Utilities
     {
+        private static String sIncludePattern = ("\\.*#.*include.*(\\<|\\\")(?'FileName'.+)(\\>|\\\")");
         public static Boolean RebuildCurrentConfiguration(VCProject oProject)
         {
             Boolean bRetVal = false;
@@ -51,7 +52,7 @@ namespace CPPHelpers
             Boolean bRetVal = false;
             try
             {
-#if !VS2010
+#if NOT_RUNNING_ON_FW_4
                 DTE2 oApp = (DTE2)((((Project)((VCProject)oFile.project).Object)).DTE);
                 OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
                 OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
@@ -61,7 +62,7 @@ namespace CPPHelpers
 #endif
                 VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
                 oCurConfig.Compile(false, true);
-#if !VS2010
+#if NOT_RUNNING_ON_FW_4
                 TextDocument oTD = oPane.TextDocument;
                 EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
                 oTD.Selection.SelectAll();
@@ -230,28 +231,24 @@ namespace CPPHelpers
             }
         }
 
-        private static Boolean IterateAndSaveItems(ProjectItems oItems, ProjectItem oFile)
-        {
-            foreach (ProjectItem item in oItems)
-            {
-                if (item.Name == oFile.Name)
-                {
-                    item.Save("");
-                    return true;
-                }
-                if (item.ProjectItems != null)
-                {
-                    if (IterateAndSaveItems(item.ProjectItems, oFile))
-                        return true;
-                }
-            }
-            return false;
-        }
-
         public static String PathCommonPrefix(String pszFile1, String pszFile2)
         {
             StringBuilder dummy = new StringBuilder();
-            PathCommonPrefix(PathCanonicalize(pszFile1), PathCanonicalize(pszFile2), dummy);
+            SHLWAPI.PathCommonPrefix(PathCanonicalize(pszFile1), PathCanonicalize(pszFile2), dummy);
+            return PathCanonicalize(dummy.ToString());
+        }
+
+        public static String PathRelativePathTo_File(String pszFile1, String pszFile2)
+        {
+            StringBuilder dummy = new StringBuilder();
+            SHLWAPI.PathRelativePathTo(dummy, PathCanonicalize(pszFile1), 128, PathCanonicalize(pszFile2), 128);
+            return PathCanonicalize(dummy.ToString());
+        }
+
+        public static String PathRelativePathTo_Folder(String pszFile1, String pszFile2)
+        {
+            StringBuilder dummy = new StringBuilder();
+            SHLWAPI.PathRelativePathTo(dummy, PathCanonicalize(pszFile1), 16, PathCanonicalize(pszFile2), 16);
             return PathCanonicalize(dummy.ToString());
         }
 
@@ -259,7 +256,7 @@ namespace CPPHelpers
         {
             StringBuilder dummy = new StringBuilder();
             string tmp = pszFile1 + Path.DirectorySeparatorChar.ToString();
-            //PathCanonicalize(dummy, tmp);
+            //SHLWAPI.PathCanonicalize(dummy, tmp);
             return Path.GetDirectoryName(tmp);
         }
 
@@ -268,29 +265,47 @@ namespace CPPHelpers
             return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
         }
 
-        #region Shlwapi functions used internally
-        [DllImport("shlwapi.dll")]
-        public static extern bool PathRelativePathTo(
-             [Out] StringBuilder pszPath,
-             [In] string pszFrom,
-             [In] uint dwAttrFrom,
-             [In] string pszTo,
-             [In] uint dwAttrTo
-        );
-
-        [DllImport("shlwapi.dll")]
-        public static extern Int32 PathCommonPrefix(
-                         [In] string pszFile1,
-                         [In] string pszFile2,
-                         [Out] StringBuilder pszPath
-                    );
-
-        [DllImport("shlwapi.dll")]
-        public static extern bool PathCanonicalize(
-            [Out] StringBuilder dst,
-            [In] string src
-            );
-        #endregion
+        internal static Boolean IsLocalFile(VCCodeInclude oCI, ref IncludeStructEx oInc)
+        {
+            oInc = null;
+            String sIncludeFile = oCI.FullName;
+            TextPoint oStartPoint = oCI.StartPoint;
+            EditPoint oEditPoint = oStartPoint.CreateEditPoint();
+            String sTmpInclude = oEditPoint.GetText(oCI.EndPoint);
+            Match match = Regex.Match(sTmpInclude, sIncludePattern);
+            String sIncFullName;
+            if (match.Success)
+            {
+                sIncFullName = match.Groups["FileName"].Value;
+                VCProject oProject = (VCProject)oCI.Project.Object;
+                VCFile oFile = (VCFile)oCI.ProjectItem.Object;
+                FileInfo oFI = new FileInfo(Path.Combine(Path.GetDirectoryName(oFile.FullPath), sIncFullName));
+                DirectoryInfo oParentFolder = new DirectoryInfo(Path.GetFullPath(oProject.ProjectDirectory)).Parent;
+                FileInfo oFIParent = new FileInfo(Path.Combine(oParentFolder.FullName, sIncFullName));
+               
+                if (oFI.Exists || oFIParent.Exists)
+                {
+                    oInc = new IncludeStructEx();
+                    oInc.oInc = oCI;
+                    oInc.sFileName = sIncFullName;
+                    if(oFI.Exists)
+                    {
+                        oInc.sFullPath = oFI.FullName;
+                    }
+                    else if (oFIParent.Exists)
+                    {
+                        oInc.sFullPath = oFIParent.FullName;
+                    }
+                    oInc.bLocalFile = true;
+                    oInc.sRelativePath = PathRelativePathTo_File(oFile.FullPath, oFI.FullName);
+                }
+                else
+                {
+                    oInc = null;
+                }
+            }
+            return oInc != null;
+        }
     }
 
     public class IncludesKey : IComparable
@@ -325,6 +340,15 @@ namespace CPPHelpers
 
     }
 
+    public class IncludeStructEx
+    {
+        public VCCodeInclude oInc;
+        public String sFileName;
+        public String sFullPath;
+        public String sRelativePath;
+        public Boolean bLocalFile;
+    }
+
     public class IncludeComparer : IComparer<IncludesKey>
     {
         public int Compare(IncludesKey lhs, IncludesKey rhs)
@@ -355,6 +379,28 @@ namespace CPPHelpers
 
     public class SHLWAPI
     {
-        
+        #region Shlwapi functions used internally
+        [DllImport("shlwapi.dll")]
+        public static extern bool PathRelativePathTo(
+             [Out] StringBuilder pszPath,
+             [In] string pszFrom,
+             [In] uint dwAttrFrom,
+             [In] string pszTo,
+             [In] uint dwAttrTo
+        );
+
+        [DllImport("shlwapi.dll")]
+        public static extern Int32 PathCommonPrefix(
+                         [In] string pszFile1,
+                         [In] string pszFile2,
+                         [Out] StringBuilder pszPath
+                    );
+
+        [DllImport("shlwapi.dll")]
+        public static extern bool PathCanonicalize(
+            [Out] StringBuilder dst,
+            [In] string src
+            );
+        #endregion
     }
 }
