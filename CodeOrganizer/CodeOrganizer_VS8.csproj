@@ -11,8 +11,8 @@
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>CodeOrganizer</AssemblyName>
     <RootNamespace>CodeOrganizer</RootNamespace>
-<DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
-<DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +22,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <IncrementalBuild>false</IncrementalBuild>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">DEBUG;NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -31,6 +33,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <IncrementalBuild>false</IncrementalBuild>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Extensibility, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -49,6 +53,7 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IncludesNormalizer.cs" />
     <Compile Include="IncludesRemover.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />

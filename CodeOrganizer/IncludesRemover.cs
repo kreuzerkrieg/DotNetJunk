@@ -35,11 +35,11 @@ namespace CPPHelpers
                     EditPoint oEditPoint = oStartPoint.CreateEditPoint();
                     String sOrigText = oEditPoint.GetText(oCI.EndPoint);
                     oEditPoint.Insert("//");
-                    Utilities.SaveFile(oFile.Object);
+                    Utilities.SaveFile((ProjectItem)oFile.Object);
                     if (!Utilities.CompileFile(oFile))
                     {
                         oEditPoint.ReplaceText(oStartPoint, "", (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
-                        Utilities.SaveFile(oFile.Object);
+                        Utilities.SaveFile((ProjectItem)oFile.Object);
                     }
                     else
                     {

@@ -67,8 +67,9 @@ namespace CPPHelpers
                 EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
                 oTD.Selection.SelectAll();
                 bRetVal = oTD.Selection.Text.Contains(" 0 error");
-#endif
+#else
                 bRetVal = true;
+#endif
             }
             catch (Exception ex)
             {
@@ -144,7 +145,7 @@ namespace CPPHelpers
 
         public static Boolean SaveFile(ProjectItem oFile)
         {
-            return oFile.Document.Save() == vsSaveStatus.vsSaveSucceeded;
+            return oFile.Document.Save("") == vsSaveStatus.vsSaveSucceeded;
         }
 
         public static Boolean IsThirdPartyFile(String sPath, VCConfiguration oProjConfig)
@@ -256,7 +257,7 @@ namespace CPPHelpers
         {
             StringBuilder dummy = new StringBuilder();
             string tmp = pszFile1 + Path.DirectorySeparatorChar.ToString();
-            //SHLWAPI.PathCanonicalize(dummy, tmp);
+            SHLWAPI.PathCanonicalize(dummy, tmp);
             return Path.GetDirectoryName(tmp);
         }
 
@@ -285,19 +286,28 @@ namespace CPPHelpers
                
                 if (oFI.Exists || oFIParent.Exists)
                 {
-                    oInc = new IncludeStructEx();
-                    oInc.oInc = oCI;
-                    oInc.sFileName = sIncFullName;
-                    if(oFI.Exists)
+                    if(oFI.Exists && PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == PathCanonicalize(oProject.ProjectDirectory))
                     {
+                        oInc = new IncludeStructEx();
+                        oInc.oInc = oCI;
+                        oInc.sFileName = sIncFullName;
                         oInc.sFullPath = oFI.FullName;
+                        oInc.sRelativePath = PathRelativePathTo_File(oFile.FullPath, oFI.FullName);
+                        oInc.bLocalFile = true;
                     }
-                    else if (oFIParent.Exists)
+                    else if (oFIParent.Exists && PathCommonPrefix(oFIParent.FullName, oProject.ProjectDirectory) == PathCanonicalize(oProject.ProjectDirectory))
                     {
+                        oInc = new IncludeStructEx();
+                        oInc.oInc = oCI;
+                        oInc.sFileName = sIncFullName;
                         oInc.sFullPath = oFIParent.FullName;
+                        oInc.sRelativePath = PathRelativePathTo_File(oFile.FullPath, oFIParent.FullName);
+                        oInc.bLocalFile = true;
                     }
-                    oInc.bLocalFile = true;
-                    oInc.sRelativePath = PathRelativePathTo_File(oFile.FullPath, oFI.FullName);
+                    else
+                    {
+                        oInc = null;
+                    }
                 }
                 else
                 {
