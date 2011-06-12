@@ -256,14 +256,25 @@ namespace CPPHelpers
         public static String PathCanonicalize(String pszFile1)
         {
             StringBuilder dummy = new StringBuilder();
-            string tmp = pszFile1 + Path.DirectorySeparatorChar.ToString();
+            String tmp = pszFile1;
+            if (IsFolder(tmp) && !tmp.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                tmp += Path.DirectorySeparatorChar.ToString();
+            }
             SHLWAPI.PathCanonicalize(dummy, tmp);
-            return Path.GetDirectoryName(tmp);
+            return dummy.ToString();
         }
 
         public static Boolean IsFolder(String path)
         {
-            return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+            if (File.Exists(path) || Directory.Exists (path))
+            {
+                return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         internal static Boolean IsLocalFile(VCCodeInclude oCI, ref IncludeStructEx oInc)
