@@ -27,7 +27,7 @@ namespace CPPHelpers
             {
                 mLogger.PrintMessage("Processing file ..::" + oFile.FullPath + "::..");
                 VCConfiguration oActiveConfig = Utilities.GetCurrentConfiguration(oCurrentProject);
-                if (hasPrecompileHeader(oActiveConfig))
+                if (Utilities.hasPrecompileHeader(oActiveConfig))
                 {
                     List<String> arrToPch = new List<String>();
                     VCFile oStdAfx = GetStdAfxFile(oCurrentProject);
@@ -158,12 +158,6 @@ namespace CPPHelpers
             oEditPoint.Insert(sTmpInclude + Environment.NewLine);
             oFCM.StartPoint.CreateEditPoint().SmartFormat(oFCM.EndPoint);
             mLogger.PrintMessage("Include " + sTmpInclude + " moved to stdafx.h");
-        }
-
-        private Boolean hasPrecompileHeader(VCConfiguration oProjConfig)
-        {
-            VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oProjConfig.Tools).Item("VCCLCompilerTool");
-            return oCompilerTool.UsePrecompiledHeader == pchOption.pchUseUsingSpecific;
         }
 
         private DTE2 mApplication;

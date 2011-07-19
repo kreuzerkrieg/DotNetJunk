@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddPCHtoProject.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -78,13 +79,16 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IncludesNormalizer.cs" />
     <Compile Include="IncludesRemover.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="PCHOrganizer.cs" />
+    <Compile Include="Resources\PCHData.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PCHData.resx</DependentUpon>
+    </Compile>
     <Compile Include="SortIncludes.cs" />
-    <Compile Include="Test.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +152,13 @@
     <Content Include="\\KREUZERKRIEG\Personal Data\Wolf\My Documents\Visual Studio 2010\Addins\CodeOrganizer - For Testing.AddIn">
       <Link>CodeOrganizer - For Testing.AddIn</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PCHData.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PCHData.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

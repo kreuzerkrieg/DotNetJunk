@@ -336,7 +336,14 @@ namespace CPPHelpers
                     return oInc.bLocalFile;
                 }
             }
+            oInc = null;
             return false;
+        }
+
+        internal static Boolean hasPrecompileHeader(VCConfiguration oProjConfig)
+        {
+            VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oProjConfig.Tools).Item("VCCLCompilerTool");
+            return oCompilerTool.UsePrecompiledHeader == pchOption.pchUseUsingSpecific;
         }
     }
 
