@@ -32,7 +32,7 @@ namespace CodeOrganizer
                 {
                     IncludeStructEx oInc = null;
                     Boolean isLocal = Utilities.IsLocalFile(oCI, ref oInc);
-                    if (isLocal && oInc != null)
+                    if (oInc != null)
                     {
                         arrIncludesToRemove.Add(oInc);
                     }

@@ -34,7 +34,7 @@ namespace CPPHelpers
                 {
                     IncludeStructEx oInc = null;
                     Boolean isLocal = Utilities.IsLocalFile(oCI, ref oInc);
-                    if (isLocal && oInc != null)
+                    if (oInc != null)
                     {
                         arrIncludesToRemove.Add(oInc);
                     }
@@ -47,7 +47,7 @@ namespace CPPHelpers
                     TextPoint oStartPoint = oIncEx.oInc.StartPoint;
                     EditPoint oEditPoint = oStartPoint.CreateEditPoint();
                     String sTmpInclude = oEditPoint.GetText(oIncEx.oInc.EndPoint);
-                    String sNewDirective = "#include " + ((oIncEx.bLocalFile) ? "\"" : "<") + oIncEx.sFileName + (oIncEx.bLocalFile ? "\"" : ">");
+                    String sNewDirective = "#include " + ((oIncEx.bLocalFile) ? "\"" : "<") + oIncEx.sFileName.Replace("\\","/") + (oIncEx.bLocalFile ? "\"" : ">");
                     if (sTmpInclude != sNewDirective)
                     {
                         oEditPoint.ReplaceText(oIncEx.oInc.EndPoint, sNewDirective, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
