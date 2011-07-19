@@ -261,13 +261,17 @@ namespace CPPHelpers
             {
                 tmp += Path.DirectorySeparatorChar.ToString();
             }
+            if (Path.IsPathRooted(tmp))
+            {
+                tmp = new DirectoryInfo(tmp).FullName;
+            }
             SHLWAPI.PathCanonicalize(dummy, tmp);
             return dummy.ToString();
         }
 
         public static Boolean IsFolder(String path)
         {
-            if (File.Exists(path) || Directory.Exists (path))
+            if (File.Exists(path) || Directory.Exists(path))
             {
                 return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
             }
@@ -277,9 +281,10 @@ namespace CPPHelpers
             }
         }
 
-        internal static Boolean IsLocalFile(VCCodeInclude oCI, ref IncludeStructEx oInc)
+        internal static List<KeyValuePair<String, String>> GetPossibleIncludeFileLocations(VCCodeInclude oCI)
         {
-            oInc = null;
+            List<KeyValuePair<String, String>> oRetVal = new List<KeyValuePair<String, String>>();
+
             String sIncludeFile = oCI.FullName;
             TextPoint oStartPoint = oCI.StartPoint;
             EditPoint oEditPoint = oStartPoint.CreateEditPoint();
@@ -294,38 +299,44 @@ namespace CPPHelpers
                 FileInfo oFI = new FileInfo(Path.Combine(Path.GetDirectoryName(oFile.FullPath), sIncFullName));
                 DirectoryInfo oParentFolder = new DirectoryInfo(Path.GetFullPath(oProject.ProjectDirectory)).Parent;
                 FileInfo oFIParent = new FileInfo(Path.Combine(oParentFolder.FullName, sIncFullName));
-               
-                if (oFI.Exists || oFIParent.Exists)
+                oRetVal.Add(new KeyValuePair < String, String > (Path.GetDirectoryName(oFile.FullPath), oFI.FullName));
+                oRetVal.Add(new KeyValuePair<String, String>(oParentFolder.FullName, oFIParent.FullName));
+                List<String> oIncludesArr = GetIncludePaths(oProject);
+                foreach (String IncPath in oIncludesArr)
                 {
-                    if(oFI.Exists && PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == PathCanonicalize(oProject.ProjectDirectory))
+                    oRetVal.Add(new KeyValuePair<String, String>(PathCanonicalize(IncPath), PathCanonicalize(Path.Combine(IncPath, sIncFullName))));
+                }
+            }
+            return oRetVal;
+        }
+
+        internal static Boolean IsLocalFile(VCCodeInclude oCI, ref IncludeStructEx oInc)
+        {
+            List<KeyValuePair<String, String>> PossibleLocations = GetPossibleIncludeFileLocations(oCI);
+            oInc = new IncludeStructEx();
+            VCFile oFile = (VCFile)oCI.ProjectItem.Object;
+            VCProject oProject = (VCProject)oCI.Project.Object;
+            foreach (KeyValuePair<String, String> pair in PossibleLocations)
+            {
+                FileInfo oFI = new FileInfo(pair.Value);
+                if (oFI.Exists)
+                {
+                    oInc.oInc = oCI;
+                    oInc.sFileName = PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    oInc.sFullPath = oFI.FullName;
+                    oInc.sRelativePath = PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    if (PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == PathCanonicalize(oProject.ProjectDirectory))
                     {
-                        oInc = new IncludeStructEx();
-                        oInc.oInc = oCI;
-                        oInc.sFileName = sIncFullName;
-                        oInc.sFullPath = oFI.FullName;
-                        oInc.sRelativePath = PathRelativePathTo_File(oFile.FullPath, oFI.FullName);
-                        oInc.bLocalFile = true;
-                    }
-                    else if (oFIParent.Exists && PathCommonPrefix(oFIParent.FullName, oProject.ProjectDirectory) == PathCanonicalize(oProject.ProjectDirectory))
-                    {
-                        oInc = new IncludeStructEx();
-                        oInc.oInc = oCI;
-                        oInc.sFileName = sIncFullName;
-                        oInc.sFullPath = oFIParent.FullName;
-                        oInc.sRelativePath = PathRelativePathTo_File(oFile.FullPath, oFIParent.FullName);
                         oInc.bLocalFile = true;
                     }
                     else
                     {
-                        oInc = null;
+                        oInc.bLocalFile = false;
                     }
-                }
-                else
-                {
-                    oInc = null;
+                    return oInc.bLocalFile;
                 }
             }
-            return oInc != null;
+            return false;
         }
     }
 
