@@ -14,8 +14,6 @@
     <DeploymentDirectory>.\bin\</DeploymentDirectory>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
-    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
-    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,7 +29,8 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
-    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v3.5'">RUNNING_ON_FW_3.5</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v3.0'">RUNNING_ON_FW_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -43,7 +42,8 @@
     <IncrementalBuild>false</IncrementalBuild>
     <DocumentationFile>CodeOrganizer.xml</DocumentationFile>
     <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
-    <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v3.5'">RUNNING_ON_FW_3.5</DefineConstants>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v3.0'">RUNNING_ON_FW_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>CodeOrganizer</RootNamespace>
@@ -84,6 +84,7 @@
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="PCHOrganizer.cs" />
     <Compile Include="SortIncludes.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

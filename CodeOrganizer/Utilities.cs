@@ -52,7 +52,7 @@ namespace CPPHelpers
             Boolean bRetVal = false;
             try
             {
-#if NOT_RUNNING_ON_FW_4
+#if !RUNNING_ON_FW_4
                 DTE2 oApp = (DTE2)((((Project)((VCProject)oFile.project).Object)).DTE);
                 OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
                 OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
@@ -62,7 +62,7 @@ namespace CPPHelpers
 #endif
                 VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
                 oCurConfig.Compile(false, true);
-#if NOT_RUNNING_ON_FW_4
+#if !RUNNING_ON_FW_4
                 TextDocument oTD = oPane.TextDocument;
                 EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
                 oTD.Selection.SelectAll();
