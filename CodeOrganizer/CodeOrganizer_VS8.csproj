@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddPCHtoProject.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -53,16 +54,19 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IncludesNormalizer.cs" />
     <Compile Include="IncludesRemover.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="PCHOrganizer.cs" />
+    <Compile Include="Resources\PCHData.Designer.cs" />
     <Compile Include="SortIncludes.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CommandBar.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PCHData.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
