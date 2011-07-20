@@ -47,7 +47,7 @@ namespace CPPHelpers
                     mLogger.PrintMessage("Project " + oCurrentProject.Name + " does not employ PCH.");
                 }
 
-                
+
                 return;
             }
             catch (SystemException ex)
@@ -80,60 +80,68 @@ namespace CPPHelpers
             ref List<String> arToPCH)
         {
             Boolean bRetVal = false;
-            if (oFile.Extension != ".cpp" &&
-                oFile.Extension != ".c" &&
-                oFile.Extension != ".h" &&
-                oFile.Extension != ".hpp")
+            //if (oFile.Extension != ".cpp" &&
+            //    oFile.Extension != ".c" &&
+            //    oFile.Extension != ".h" &&
+            //    oFile.Extension != ".hpp")
+            if (oFile.FileType != eFileType.eFileTypeCppCode)
                 return bRetVal;
             if (oFile.Name.ToLowerInvariant().Contains("stdafx"))
                 return bRetVal;
             String sIncludePattern = ("\\.*#.*include.*(\\<|\\\")(?'FileName'.+)(\\>|\\\")");
-           
+
             try
             {
                 List<KeyValuePair<TextPoint, TextPoint>> arrIncludesToRemove = new List<KeyValuePair<TextPoint, TextPoint>>();
                 VCConfiguration oCurConfig = Utilities.GetCurrentConfiguration((VCProject)oFile.project);
-                foreach (VCCodeInclude oCI in oIncludes.Values)
+                try
                 {
-                    TextPoint oStartPoint = oCI.StartPoint;
-                    EditPoint oEditPoint = oStartPoint.CreateEditPoint();
-                    String sTmpInclude = oEditPoint.GetText(oCI.EndPoint);
-                    Match match = Regex.Match(sTmpInclude, sIncludePattern);
-                    String sIncFullName;
-                    if (match.Success)
+                    foreach (VCCodeInclude oCI in oIncludes.Values)
                     {
-                        sIncFullName = match.Groups["FileName"].Value;
-                        for (int i = 0; i < arIncludes.Count; i++)
+                        TextPoint oStartPoint = oCI.StartPoint;
+                        EditPoint oEditPoint = oStartPoint.CreateEditPoint();
+                        String sTmpInclude = oEditPoint.GetText(oCI.EndPoint);
+                        Match match = Regex.Match(sTmpInclude, sIncludePattern);
+                        String sIncFullName;
+                        if (match.Success)
                         {
-                            FileInfo oTmpFI = new FileInfo(Path.Combine(arIncludes[i], sIncFullName));
-
-                            if (oTmpFI.Exists)
+                            sIncFullName = match.Groups["FileName"].Value;
+                            for (int i = 0; i < arIncludes.Count; i++)
                             {
-                                if (Utilities.IsThirdPartyFile(oTmpFI.FullName, oCurConfig))
+                                FileInfo oTmpFI = new FileInfo(Path.Combine(arIncludes[i], sIncFullName));
+
+                                if (oTmpFI.Exists)
                                 {
-                                    arrIncludesToRemove.Add(new KeyValuePair<TextPoint, TextPoint>(oCI.StartPoint, oCI.EndPoint));
-                                    if (!arToPCH.Contains(sTmpInclude))
+                                    if (Utilities.IsThirdPartyFile(oTmpFI.FullName, oCurConfig))
                                     {
-                                        arToPCH.Add(sTmpInclude);
+                                        arrIncludesToRemove.Add(new KeyValuePair<TextPoint, TextPoint>(oCI.StartPoint, oCI.EndPoint));
+                                        if (!arToPCH.Contains(sTmpInclude))
+                                        {
+                                            arToPCH.Add(sTmpInclude);
+                                        }
+                                        break;
                                     }
-                                    break;
-                                }
-                                else
-                                {
-                                    break; // File found, not thirdparty
+                                    else
+                                    {
+                                        break; // File found, not thirdparty
+                                    }
                                 }
                             }
                         }
                     }
+                    for (int j = 0; j < arrIncludesToRemove.Count; j++)
+                    {
+                        TextPoint oStartPoint = arrIncludesToRemove[j].Key;
+                        TextPoint oEndPoint = arrIncludesToRemove[j].Value;
+                        EditPoint oEditPoint = oStartPoint.CreateEditPoint();
+                        mLogger.PrintMessage("Directive  " + oEditPoint.GetText(oEndPoint) + " removed from " + oFile.Name);
+                        oEditPoint.Delete(oEndPoint);
+                        oEditPoint.DeleteWhitespace(vsWhitespaceOptions.vsWhitespaceOptionsVertical);
+                    }
                 }
-                for (int j = 0; j < arrIncludesToRemove.Count; j++)
+                catch (Exception ex)
                 {
-                    TextPoint oStartPoint = arrIncludesToRemove[j].Key;
-                    TextPoint oEndPoint = arrIncludesToRemove[j].Value;
-                    EditPoint oEditPoint = oStartPoint.CreateEditPoint();
-                    mLogger.PrintMessage("Directive  " + oEditPoint.GetText(oEndPoint) + " removed from " + oFile.Name);
-                    oEditPoint.Delete(oEndPoint);
-                    oEditPoint.DeleteWhitespace(vsWhitespaceOptions.vsWhitespaceOptionsVertical);
+                    mLogger.PrintMessage("Failed to parse file: " + oFile.FullPath + ".Reason: " + ex.Message);
                 }
                 Utilities.SaveFile((ProjectItem)oFile.Object);
             }

@@ -39,25 +39,34 @@ namespace CPPHelpers
                         arrIncludesToRemove.Add(oInc);
                     }
                 }
-                
+
                 for (int j = 0; j < arrIncludesToRemove.Count; j++)
                 {
-                    IncludeStructEx oIncEx = arrIncludesToRemove[j];
+                    try
+                    {
+                        IncludeStructEx oIncEx = arrIncludesToRemove[j];
 
-                    TextPoint oStartPoint = oIncEx.oInc.StartPoint;
-                    EditPoint oEditPoint = oStartPoint.CreateEditPoint();
-                    String sTmpInclude = oEditPoint.GetText(oIncEx.oInc.EndPoint);
-                    String sNewDirective = "#include " + ((oIncEx.bLocalFile) ? "\"" : "<") + oIncEx.sFileName.Replace("\\","/") + (oIncEx.bLocalFile ? "\"" : ">");
-                    if (sTmpInclude != sNewDirective)
-                    {
-                        oEditPoint.ReplaceText(oIncEx.oInc.EndPoint, sNewDirective, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
-                        mLogger.PrintMessage("Directive " + sTmpInclude + " canonicalized as " + sNewDirective);
+                        TextPoint oStartPoint = oIncEx.oInc.StartPoint;
+                        EditPoint oEditPoint = oStartPoint.CreateEditPoint();
+                        String sTmpInclude = oEditPoint.GetText(oIncEx.oInc.EndPoint);
+                        String sNewDirective = "#include " + ((oIncEx.bLocalFile) ? "\"" : "<") + oIncEx.sFileName.Replace("\\", "/") + (oIncEx.bLocalFile ? "\"" : ">");
+                        if (sTmpInclude != sNewDirective)
+                        {
+                            oEditPoint.ReplaceText(oIncEx.oInc.EndPoint, sNewDirective, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
+                            mLogger.PrintMessage("Directive " + sTmpInclude + " canonicalized as " + sNewDirective);
+                        }
+                        else
+                        {
+                            mLogger.PrintMessage("Directive " + sTmpInclude + " already canonicalized.");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        mLogger.PrintMessage("Directive " + sTmpInclude + " already canonicalized.");
+                        mLogger.PrintMessage("Failed to parse file: " + oFile.FullPath + " while canonicalizing includes. Reason: " + ex.Message);
+                        return false;
                     }
                 }
+
             }
             catch (Exception ex)
             {
