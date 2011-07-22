@@ -145,6 +145,10 @@ namespace CPPHelpers
 
         public static Boolean SaveFile(ProjectItem oFile)
         {
+            if (oFile.Document == null)
+            {
+                return false;
+            }
             return oFile.Document.Save("") == vsSaveStatus.vsSaveSucceeded;
         }
 

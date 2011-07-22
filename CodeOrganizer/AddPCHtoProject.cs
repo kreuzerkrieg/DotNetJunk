@@ -46,7 +46,7 @@ namespace CodeOrganizer
             StreamWriter oPCHCPP = File.CreateText(CPPPath);
             oPCHCPP.Write(Resources.PCHData.stdafx_cpp);
             oPCHCPP.Close();
-            VCFile CPP = oProject.AddFile(CPPPath);
+            VCFile CPP = (VCFile)oProject.AddFile(CPPPath);
             IVCCollection oConfigurations = (IVCCollection)CPP.FileConfigurations;
             foreach (VCFileConfiguration oConfig in oConfigurations)
             {
@@ -55,7 +55,7 @@ namespace CodeOrganizer
             }
             String HPath = Path.Combine(oProject.ProjectDirectory, "stdafx.h");
             StreamWriter oPCHH = File.CreateText(HPath);
-            oPCHH.Write(Resources.PCHData.stdafx_h.Replace(@"$$ProjectName$$",oProject.Name.ToUpperInvariant()));
+            oPCHH.Write(Resources.PCHData.stdafx_h.Replace(@"$$ProjectName$$", oProject.Name.ToUpperInvariant()));
             oPCHH.Close();
             oProject.AddFile(HPath);
         }
@@ -72,15 +72,29 @@ namespace CodeOrganizer
 
         private void addPrecompiledHeaderToProject(VCProject oProject)
         {
+#if RUNNING_ON_FW_4
             foreach (VCFile oFile in oProject.GetFilesWithItemType("ClCompile"))
+#endif
+#if !RUNNING_ON_FW_4
+            foreach (VCFile oFile in (IVCCollection)oProject.Files)
+#endif
             {
+
                 ProjectItem oPI = ((ProjectItem)oFile.Object);
-                VCFileCodeModel oFCM = (VCFileCodeModel)oPI.FileCodeModel;
-                if (oFCM == null)
+#if !RUNNING_ON_FW_4
+                if (oFile.FileType == eFileType.eFileTypeCppCode)
+#endif
                 {
-                    throw new Exception("Cannot get FilecodeModel for file " + oFile.FullPath);
+                    VCFileCodeModel oFCM = (VCFileCodeModel)oPI.FileCodeModel;
+                    if (oFCM == null)
+                    {
+                        throw new Exception("Cannot get FilecodeModel for file " + oFile.Name);
+                    }
+                    oFCM.StartTransaction("AddInclude");
+                    oFCM.AddInclude("\"stdafx.h\"", Type.Missing);
+                    oFCM.CommitTransaction();
+                    Utilities.SaveFile(oPI);
                 }
-                oFCM.AddInclude("\"stdafx.h\"", Type.Missing);
             }
         }
         private DTE2 mApplication;
