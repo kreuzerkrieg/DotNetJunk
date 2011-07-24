@@ -62,7 +62,7 @@ namespace CPPHelpers
                 System.Threading.Thread.Sleep(50);
 #endif
                 VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
-                oCurConfig.Compile(false, true);
+                oCurConfig.Compile(true, true);
                 System.Threading.Thread.Sleep(50);
 #if !RUNNING_ON_FW_4
                 TextDocument oTD = oPane.TextDocument;
