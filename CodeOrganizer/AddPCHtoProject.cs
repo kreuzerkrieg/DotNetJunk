@@ -90,9 +90,8 @@ namespace CodeOrganizer
                     {
                         throw new Exception("Cannot get FilecodeModel for file " + oFile.Name);
                     }
-                    oFCM.StartTransaction("AddInclude");
-                    oFCM.AddInclude("\"stdafx.h\"", Type.Missing);
-                    oFCM.CommitTransaction();
+                    EditPoint oEditPoint = oFCM.StartPoint.CreateEditPoint();
+                    oEditPoint.Insert("#include \"stdafx.h\"" + Environment.NewLine);
                     Utilities.SaveFile(oPI);
                 }
             }

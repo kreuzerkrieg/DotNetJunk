@@ -59,13 +59,16 @@ namespace CPPHelpers
                 oOutputWin.Parent.Activate();
                 oPane.Activate();
                 oPane.Clear();
+                System.Threading.Thread.Sleep(50);
 #endif
                 VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
-                oCurConfig.Compile(false, true);
+                oCurConfig.Compile(true, true);
+                System.Threading.Thread.Sleep(50);
 #if !RUNNING_ON_FW_4
                 TextDocument oTD = oPane.TextDocument;
                 EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
                 oTD.Selection.SelectAll();
+                System.Threading.Thread.Sleep(50);
                 bRetVal = oTD.Selection.Text.Contains(" 0 error");
 #else
                 bRetVal = true;
@@ -157,7 +160,7 @@ namespace CPPHelpers
             bool bRetVal = false;
             try
             {
-                DirectoryInfo oPathTo3rdParties = new DirectoryInfo(@"f:\Development\AC_SERVER_4_8_1\3rdParty\");
+                DirectoryInfo oPathTo3rdParties = new DirectoryInfo(@"f:\Development\AC_SERVER_4_7\3rdParty\");
                 //use DTE2.Properties("Projects and Solutions", "VC++ Directories")
                 DirectoryInfo oPathToVS1 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)include\"));
                 DirectoryInfo oPathToVS2 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)atlmfc\include\"));
