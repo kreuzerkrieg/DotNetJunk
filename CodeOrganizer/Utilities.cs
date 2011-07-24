@@ -47,7 +47,12 @@ namespace CPPHelpers
             return bRetVal;
         }
 
-        public static Boolean CompileFile(VCFile oFile, Boolean rebuild = true)
+        public static Boolean CompileFile(VCFile oFile)
+        {
+            return CompileFile(oFile, true);
+        }
+
+        public static Boolean CompileFile(VCFile oFile, Boolean rebuild)
         {
             Boolean bRetVal = false;
             try
