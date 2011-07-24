@@ -21,8 +21,13 @@ namespace CPPHelpers
         public Boolean RemoveIncludes(VCFile oFile)
         {
             Boolean bRetVal = false;
-            if (oFile.Extension != ".cpp")
+            if (oFile.FileType == eFileType.eFileTypeCppCode)
                 return bRetVal;
+            if (!Utilities.CompileFile(oFile, false))
+            {
+                mLogger.PrintMessage("ERROR: File '" + oFile.Name + "' must be in a compilable condition before you proceed! Aborting...");
+                return bRetVal;
+            }
             try
             {
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();

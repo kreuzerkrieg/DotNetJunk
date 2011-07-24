@@ -22,6 +22,8 @@ namespace CPPHelpers
 
         public void CleanFiles(VCFile oFile)
         {
+            if (oFile.FileType != eFileType.eFileTypeCppCode)
+                return;
             VCProject oCurrentProject = (VCProject)oFile.project;
             try
             {
