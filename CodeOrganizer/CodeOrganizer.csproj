@@ -89,10 +89,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PCHData.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Resource1.Designer.cs">
+    <Compile Include="Resources\Icons.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resource1.resx</DependentUpon>
+      <DependentUpon>Icons.resx</DependentUpon>
     </Compile>
     <Compile Include="SortIncludes.cs" />
     <Compile Include="Utilities.cs" />
@@ -155,10 +155,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeOrganizer.AddIn" />
-    <None Include="Images\CPP.png" />
-    <Content Include="Resources\CPP.png" />
-    <Content Include="Resources\docs.png" />
-    <Content Include="Resources\X.png" />
+    <None Include="Icons\X.png" />
+    <None Include="Icons\Document.png" />
+    <None Include="Icons\Event.png" />
+    <None Include="Icons\Object.png" />
+    <None Include="Icons\Tools.png" />
+    <None Include="Icons\Libraries.png" />
     <Content Include="\\KREUZERKRIEG\Personal Data\Wolf\My Documents\Visual Studio 2010\Addins\CodeOrganizer - For Testing.AddIn">
       <Link>CodeOrganizer - For Testing.AddIn</Link>
     </Content>
@@ -169,9 +171,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>PCHData.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resource1.resx">
+    <EmbeddedResource Include="Resources\Icons.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Icons.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
