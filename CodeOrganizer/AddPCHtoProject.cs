@@ -84,7 +84,10 @@ namespace CodeOrganizer
             foreach (VCFile oFile in (IVCCollection)oProject.Files)
 #endif
             {
-
+                if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
+                {
+                    continue;
+                }
                 ProjectItem oPI = ((ProjectItem)oFile.Object);
 #if !RUNNING_ON_FW_4
                 if (oFile.FileType == eFileType.eFileTypeCppCode)
