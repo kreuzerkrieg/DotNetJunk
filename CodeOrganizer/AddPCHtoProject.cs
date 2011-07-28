@@ -55,8 +55,15 @@ namespace CodeOrganizer
             IVCCollection oConfigurations = (IVCCollection)CPP.FileConfigurations;
             foreach (VCFileConfiguration oConfig in oConfigurations)
             {
-                VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)oConfig.Tool;
-                oCompilerTool.UsePrecompiledHeader = pchOption.pchCreateUsingSpecific;
+                try
+                {
+                    VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)oConfig.Tool;
+                    oCompilerTool.UsePrecompiledHeader = pchOption.pchCreateUsingSpecific;
+                }
+                catch (Exception ex)
+                {
+                    mLogger.PrintMessage("Failed when setting stdafx.cpp in configuration \"" + oConfig.Name + "\" to create precompiled headers. Reason: " + ex.Message);
+                }
             }
             String HPath = Path.Combine(oProject.ProjectDirectory, "stdafx.h");
             StreamWriter oPCHH = File.CreateText(HPath);
@@ -70,8 +77,15 @@ namespace CodeOrganizer
             IVCCollection oConfigurations = ((IVCCollection)oProject.Configurations);
             foreach (VCConfiguration oConfig in oConfigurations)
             {
-                VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oConfig.Tools).Item("VCCLCompilerTool");
-                oCompilerTool.UsePrecompiledHeader = pchOption.pchUseUsingSpecific;
+                try
+                {
+                    VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oConfig.Tools).Item("VCCLCompilerTool");
+                    oCompilerTool.UsePrecompiledHeader = pchOption.pchUseUsingSpecific;
+                }
+                catch (Exception ex)
+                {
+                    mLogger.PrintMessage("Failed when setting configuration \"" + oConfig.Name + "\" to use precompiled headers. Reason: " + ex.Message);
+                }
             }
         }
 
@@ -84,23 +98,30 @@ namespace CodeOrganizer
             foreach (VCFile oFile in (IVCCollection)oProject.Files)
 #endif
             {
-                if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
+                try
                 {
-                    continue;
-                }
-                ProjectItem oPI = ((ProjectItem)oFile.Object);
-#if !RUNNING_ON_FW_4
-                if (oFile.FileType == eFileType.eFileTypeCppCode)
-#endif
-                {
-                    VCFileCodeModel oFCM = (VCFileCodeModel)oPI.FileCodeModel;
-                    if (oFCM == null)
+                    if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
                     {
-                        throw new Exception("Cannot get FilecodeModel for file " + oFile.Name);
+                        continue;
                     }
-                    EditPoint oEditPoint = oFCM.StartPoint.CreateEditPoint();
-                    oEditPoint.Insert("#include \"stdafx.h\"" + Environment.NewLine);
-                    Utilities.SaveFile(oPI);
+                    ProjectItem oPI = ((ProjectItem)oFile.Object);
+#if !RUNNING_ON_FW_4
+                    if (oFile.FileType == eFileType.eFileTypeCppCode)
+#endif
+                    {
+                        VCFileCodeModel oFCM = (VCFileCodeModel)oPI.FileCodeModel;
+                        if (oFCM == null)
+                        {
+                            throw new Exception("Cannot get FilecodeModel for file " + oFile.Name);
+                        }
+                        EditPoint oEditPoint = oFCM.StartPoint.CreateEditPoint();
+                        oEditPoint.Insert("#include \"stdafx.h\"" + Environment.NewLine);
+                        Utilities.SaveFile(oPI);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    mLogger.PrintMessage("Failed when adding \"stdafx.h\" include directive to \"" + oFile.Name + "\". Reason: " + ex.Message);
                 }
             }
         }
