@@ -47,7 +47,12 @@ namespace CPPHelpers
             return bRetVal;
         }
 
-        public static Boolean CompileFile(VCFile oFile, Boolean rebuild = true)
+        public static Boolean CompileFile(VCFile oFile)
+        {
+            return CompileFile(oFile, true);
+        }
+
+        public static Boolean CompileFile(VCFile oFile, Boolean rebuild)
         {
             Boolean bRetVal = false;
             try
@@ -102,20 +107,17 @@ namespace CPPHelpers
             try
             {
                 VCConfiguration oActiveConfig = GetCurrentConfiguration(oProject);
-                DirectoryInfo oPathToVS1 = new DirectoryInfo(oActiveConfig.Evaluate(@"$(VCInstallDir)include"));
-                DirectoryInfo oPathToVS2 = new DirectoryInfo(oActiveConfig.Evaluate(@"$(VCInstallDir)atlmfc\include"));
-                DirectoryInfo oPathToVS3 = new DirectoryInfo(oActiveConfig.Evaluate(@"$(VCInstallDir)PlatformSDK\include"));
-                DirectoryInfo oPathToVS4 = new DirectoryInfo(oActiveConfig.Evaluate(@"$(FrameworkSDKDir)include"));
+                List<DirectoryInfo> oDefaultIncludes = GetDefaultIncludePaths(oActiveConfig);
 
                 VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oActiveConfig.Tools).Item("VCCLCompilerTool");
                 String sValues = oCompilerTool.AdditionalIncludeDirectories;
                 sSplitArr = sValues.Split(new Char[] { ';', ',' });
                 IDictionary<String, String> tmp = new Dictionary<String, String>();
 
-                tmp.Add(@"$(VCInstallDir)include", oPathToVS1.FullName);
-                tmp.Add(@"$(VCInstallDir)atlmfc\include", oPathToVS1.FullName);
-                tmp.Add(@"$(VCInstallDir)PlatformSDK\include", oPathToVS1.FullName);
-                tmp.Add(@"$(FrameworkSDKDir)include", oPathToVS1.FullName);
+                for (int i = 0; i < oDefaultIncludes.Count; i++)
+                {
+                    tmp.Add(oDefaultIncludes[i].FullName, oDefaultIncludes[i].FullName);
+                }
 
                 for (int i = 0; i < sSplitArr.Length; i++)
                 {
@@ -148,11 +150,11 @@ namespace CPPHelpers
 
         public static Boolean SaveFile(ProjectItem oFile)
         {
-            if (oFile.Document == null)
+            if (oFile.Document != null)
             {
-                return false;
+                return oFile.Document.Save("") == vsSaveStatus.vsSaveSucceeded;
             }
-            return oFile.Document.Save("") == vsSaveStatus.vsSaveSucceeded;
+            return false;
         }
 
         public static Boolean IsThirdPartyFile(String sPath, VCConfiguration oProjConfig)
@@ -160,25 +162,21 @@ namespace CPPHelpers
             bool bRetVal = false;
             try
             {
-                DirectoryInfo oPathTo3rdParties = new DirectoryInfo(@"f:\Development\AC_SERVER_4_7\3rdParty\");
-                //use DTE2.Properties("Projects and Solutions", "VC++ Directories")
-                DirectoryInfo oPathToVS1 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)include\"));
-                DirectoryInfo oPathToVS2 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)atlmfc\include\"));
-                DirectoryInfo oPathToVS3 = new DirectoryInfo(oProjConfig.Evaluate(@"$(VCInstallDir)PlatformSDK\include\"));
-                DirectoryInfo oPathToVS4 = new DirectoryInfo(oProjConfig.Evaluate(@"$(FrameworkSDKDir)include\"));
+                List<DirectoryInfo> Includes = GetDefaultIncludePaths(oProjConfig);
+                Includes.Add(new DirectoryInfo(@"f:\Development\AC_SERVER_4_7\3rdParty\"));
                 StringComparer invICCmp = StringComparer.InvariantCultureIgnoreCase;
 
-                String dummy = PathCommonPrefix(sPath, oPathTo3rdParties.FullName);
-                String dummy1 = PathCommonPrefix(sPath, oPathToVS1.FullName);
-                String dummy2 = PathCommonPrefix(sPath, oPathToVS2.FullName);
-                String dummy3 = PathCommonPrefix(sPath, oPathToVS3.FullName);
-                String dummy4 = PathCommonPrefix(sPath, oPathToVS4.FullName);
+                List<String> Prefixes = new List<String>(Includes.Count);
+                for (int i = 0; i < Includes.Count; i++)
+                {
+                    Prefixes.Add(PathCommonPrefix(sPath, Includes[i].FullName));
+                }
 
-                bRetVal |= (invICCmp.Compare(dummy, PathCanonicalize(oPathTo3rdParties.FullName)) == 0);
-                bRetVal |= (invICCmp.Compare(dummy1, PathCanonicalize(oPathToVS1.FullName)) == 0);
-                bRetVal |= (invICCmp.Compare(dummy2, PathCanonicalize(oPathToVS2.FullName)) == 0);
-                bRetVal |= (invICCmp.Compare(dummy3, PathCanonicalize(oPathToVS3.FullName)) == 0);
-                bRetVal |= (invICCmp.Compare(dummy4, PathCanonicalize(oPathToVS4.FullName)) == 0);
+                for (int i = 0; i < Includes.Count; i++)
+                {
+                    bRetVal |= (invICCmp.Compare(Prefixes[i], PathCanonicalize(Includes[i].FullName)) == 0);
+                }
+                
                 return bRetVal;
             }
             catch (Exception ex)
@@ -187,6 +185,39 @@ namespace CPPHelpers
                 return false;
             }
             return false;
+        }
+
+        private static List<DirectoryInfo> GetDefaultIncludePaths(VCConfiguration oProjConfig)
+        {
+            List<DirectoryInfo> RetVal = new List<DirectoryInfo>();
+            try
+            {
+                DTE2 oApp = (DTE2)((((Project)((VCProject)oProjConfig.project).Object)).DTE);
+                Properties oProps = oApp.get_Properties("Projects", "VCDirectories");
+                String oIncludes = (String)oProps.Item("IncludeDirectories").Value;
+                String RegExp = @"((?<ConfigName>.*?)\|(?<IncludeFolders>.*?)\|)+";
+                Match match = Regex.Match(oIncludes, RegExp, RegexOptions.ExplicitCapture);
+                if (match.Success)
+                {
+                    String tmp = match.Groups["ConfigName"].Value;
+                    for (int i = 0; i < match.Groups["ConfigName"].Captures.Count; i++)
+                    {
+                        if (match.Groups["ConfigName"].Captures[i].Value.ToLowerInvariant() == oProjConfig.Name.Split('|')[1].ToLowerInvariant())
+                        {
+                            String[] Paths = match.Groups["IncludeFolders"].Captures[i].Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                            for (int j = 0; j < Paths.Length; j++)
+                            {
+                                RetVal.Add(new DirectoryInfo(oProjConfig.Evaluate(Paths[j])));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //die in solitude
+            }
+            return RetVal;
         }
 
         public static Boolean RetrieveIncludes(VCFile oFile, ref SortedDictionary<IncludesKey, VCCodeInclude> oIncludes)

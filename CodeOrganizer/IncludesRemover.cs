@@ -21,9 +21,18 @@ namespace CPPHelpers
         public Boolean RemoveIncludes(VCFile oFile)
         {
             Boolean bRetVal = false;
-            if (oFile.FileType == eFileType.eFileTypeCppCode)
+            if (oFile.Extension != ".cpp" ||
+                oFile.Name.ToLowerInvariant().Contains("stdafx.cpp"))
+            {
                 return bRetVal;
-            if (!Utilities.CompileFile(oFile, false))
+            }
+
+            if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
+            {
+                return bRetVal;
+            }
+
+            if (!Utilities.CompileFile(oFile, true))
             {
                 mLogger.PrintMessage("ERROR: File '" + oFile.Name + "' must be in a compilable condition before you proceed! Aborting...");
                 return bRetVal;

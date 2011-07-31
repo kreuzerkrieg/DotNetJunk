@@ -43,6 +43,7 @@
     <Reference Include="Microsoft.VisualStudio.VCProjectEngine, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -58,12 +59,16 @@
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="PCHOrganizer.cs" />
+    <Compile Include="Resources\Icons.Designer.cs" />
     <Compile Include="Resources\PCHData.Designer.cs" />
     <Compile Include="SortIncludes.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CommandBar.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Icons.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PCHData.resx">
@@ -109,6 +114,12 @@
       <Link>CodeOrganizer - For Testing.AddIn</Link>
     </Content>
     <Content Include="CodeOrganizer.AddIn" />
+    <None Include="Icons\X.png" />
+    <None Include="Icons\Tools.png" />
+    <None Include="Icons\Object.png" />
+    <None Include="Icons\Libraries.png" />
+    <None Include="Icons\Event.png" />
+    <None Include="Icons\Document.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

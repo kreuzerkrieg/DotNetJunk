@@ -26,6 +26,10 @@ namespace CPPHelpers
         {
             try
             {
+                if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
+                {
+                    return false;
+                }
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
                 Utilities.RetrieveIncludes(oFile, ref oIncludes);
                 List<IncludeStructEx> arrIncludesToRemove = new List<IncludeStructEx>();
@@ -73,6 +77,7 @@ namespace CPPHelpers
                 mLogger.PrintMessage("Failed to parse file: " + oFile.FullPath + " while canonicalizing includes. Reason: " + ex.Message);
                 return false;
             }
+            Utilities.SaveFile((ProjectItem)oFile.Object);
             return true;
         }
     }

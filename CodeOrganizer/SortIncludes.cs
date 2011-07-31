@@ -24,6 +24,10 @@ namespace CPPHelpers
         {
             try
             {
+                if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
+                {
+                    return;
+                }
                 IncludeComparer comparer = new IncludeComparer();
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>(comparer);
                 mLogger.PrintMessage("Processing file ..::" + oFile.FullPath + "::..");

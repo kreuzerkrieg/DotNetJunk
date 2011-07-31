@@ -22,8 +22,13 @@ namespace CPPHelpers
 
         public void CleanFiles(VCFile oFile)
         {
-            if (oFile.FileType != eFileType.eFileTypeCppCode)
+            if (oFile.Extension != ".cpp" ||
+                oFile.Name.ToLowerInvariant().Contains("stdafx.cpp"))
                 return;
+            if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
+            {
+                return;
+            }
             VCProject oCurrentProject = (VCProject)oFile.project;
             try
             {
