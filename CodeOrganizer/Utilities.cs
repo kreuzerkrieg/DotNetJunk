@@ -129,7 +129,7 @@ namespace CPPHelpers
                         if (!Path.IsPathRooted(sPath))
                             sPath = Path.Combine(oProject.ProjectDirectory, sPath);
 
-                        String oTmpDir = Utilities.PathCanonicalize(sPath);
+                        String oTmpDir = SHLWAPI.PathCanonicalize(sPath);
 
                         if (!tmp.ContainsKey(oTmpDir))
                         {
@@ -169,12 +169,12 @@ namespace CPPHelpers
                 List<String> Prefixes = new List<String>(Includes.Count);
                 for (int i = 0; i < Includes.Count; i++)
                 {
-                    Prefixes.Add(PathCommonPrefix(sPath, Includes[i].FullName));
+                    Prefixes.Add(SHLWAPI.PathCommonPrefix(sPath, Includes[i].FullName));
                 }
 
                 for (int i = 0; i < Includes.Count; i++)
                 {
-                    bRetVal |= (invICCmp.Compare(Prefixes[i], PathCanonicalize(Includes[i].FullName)) == 0);
+                    bRetVal |= (invICCmp.Compare(Prefixes[i], SHLWAPI.PathCanonicalize(Includes[i].FullName)) == 0);
                 }
                 
                 return bRetVal;
@@ -270,55 +270,6 @@ namespace CPPHelpers
             }
         }
 
-        public static String PathCommonPrefix(String pszFile1, String pszFile2)
-        {
-            StringBuilder dummy = new StringBuilder();
-            SHLWAPI.PathCommonPrefix(PathCanonicalize(pszFile1), PathCanonicalize(pszFile2), dummy);
-            return PathCanonicalize(dummy.ToString());
-        }
-
-        public static String PathRelativePathTo_File(String pszFile1, String pszFile2)
-        {
-            StringBuilder dummy = new StringBuilder();
-            SHLWAPI.PathRelativePathTo(dummy, PathCanonicalize(pszFile1), 128, PathCanonicalize(pszFile2), 128);
-            return PathCanonicalize(dummy.ToString());
-        }
-
-        public static String PathRelativePathTo_Folder(String pszFile1, String pszFile2)
-        {
-            StringBuilder dummy = new StringBuilder();
-            SHLWAPI.PathRelativePathTo(dummy, PathCanonicalize(pszFile1), 16, PathCanonicalize(pszFile2), 16);
-            return PathCanonicalize(dummy.ToString());
-        }
-
-        public static String PathCanonicalize(String pszFile1)
-        {
-            StringBuilder dummy = new StringBuilder();
-            String tmp = pszFile1;
-            if (IsFolder(tmp) && !tmp.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                tmp += Path.DirectorySeparatorChar.ToString();
-            }
-            if (Path.IsPathRooted(tmp))
-            {
-                tmp = new DirectoryInfo(tmp).FullName;
-            }
-            SHLWAPI.PathCanonicalize(dummy, tmp);
-            return dummy.ToString();
-        }
-
-        public static Boolean IsFolder(String path)
-        {
-            if (File.Exists(path) || Directory.Exists(path))
-            {
-                return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         internal static List<KeyValuePair<String, String>> GetPossibleIncludeFileLocations(VCCodeInclude oCI)
         {
             List<KeyValuePair<String, String>> oRetVal = new List<KeyValuePair<String, String>>();
@@ -342,7 +293,7 @@ namespace CPPHelpers
                 List<String> oIncludesArr = GetIncludePaths(oProject);
                 foreach (String IncPath in oIncludesArr)
                 {
-                    oRetVal.Add(new KeyValuePair<String, String>(PathCanonicalize(IncPath), PathCanonicalize(Path.Combine(IncPath, sIncFullName))));
+                    oRetVal.Add(new KeyValuePair<String, String>(SHLWAPI.PathCanonicalize(IncPath), SHLWAPI.PathCanonicalize(Path.Combine(IncPath, sIncFullName))));
                 }
             }
             return oRetVal;
@@ -360,10 +311,10 @@ namespace CPPHelpers
                 if (oFI.Exists)
                 {
                     oInc.oInc = oCI;
-                    oInc.sFileName = PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    oInc.sFileName = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
                     oInc.sFullPath = oFI.FullName;
-                    oInc.sRelativePath = PathRelativePathTo_File(pair.Key, oFI.FullName);
-                    if (PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == PathCanonicalize(oProject.ProjectDirectory))
+                    oInc.sRelativePath = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    if (SHLWAPI.PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == SHLWAPI.PathCanonicalize(oProject.ProjectDirectory))
                     {
                         oInc.bLocalFile = true;
                     }
@@ -456,28 +407,77 @@ namespace CPPHelpers
 
     public class SHLWAPI
     {
+        public const Int32 MAX_PATH = 260;
         #region Shlwapi functions used internally
-        [DllImport("shlwapi.dll")]
-        public static extern bool PathRelativePathTo(
+        [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
+        private static extern bool PathRelativePathTo(
              [Out] StringBuilder pszPath,
              [In] string pszFrom,
-             [In] uint dwAttrFrom,
+             [In] FileAttributes dwAttrFrom,
              [In] string pszTo,
-             [In] uint dwAttrTo
+             [In] FileAttributes dwAttrTo
         );
 
-        [DllImport("shlwapi.dll")]
-        public static extern Int32 PathCommonPrefix(
-                         [In] string pszFile1,
-                         [In] string pszFile2,
-                         [Out] StringBuilder pszPath
-                    );
-
-        [DllImport("shlwapi.dll")]
-        public static extern bool PathCanonicalize(
-            [Out] StringBuilder dst,
-            [In] string src
+        [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
+        private static extern Int32 PathCommonPrefix(
+            [In] String pszFile1,
+            [In] String pszFile2,
+            [Out] StringBuilder pszPath
             );
+
+        [DllImport("shlwapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool PathCanonicalize(
+            [Out] StringBuilder dst, 
+            String src);
         #endregion
+
+        public static String PathCommonPrefix(String pszFile1, String pszFile2)
+        {
+            StringBuilder dummy = new StringBuilder(MAX_PATH);
+            PathCommonPrefix(PathCanonicalize(pszFile1), PathCanonicalize(pszFile2), dummy);
+            return PathCanonicalize(dummy.ToString());
+        }
+
+        public static String PathRelativePathTo_File(String pszFile1, String pszFile2)
+        {
+            StringBuilder dummy = new StringBuilder(MAX_PATH);
+            PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Archive, PathCanonicalize(pszFile2), FileAttributes.Archive);
+            return PathCanonicalize(dummy.ToString());
+        }
+
+        public static String PathRelativePathTo_Folder(String pszFile1, String pszFile2)
+        {
+            StringBuilder dummy = new StringBuilder(MAX_PATH);
+            PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Directory, PathCanonicalize(pszFile2), FileAttributes.Directory);
+            return PathCanonicalize(dummy.ToString());
+        }
+
+        public static String PathCanonicalize(String pszFile1)
+        {
+            StringBuilder dummy = new StringBuilder(MAX_PATH);
+            String tmp = pszFile1;
+            if (IsFolder(tmp) && !tmp.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                tmp += Path.DirectorySeparatorChar.ToString();
+            }
+            if (Path.IsPathRooted(tmp))
+            {
+                tmp = new DirectoryInfo(tmp).FullName;
+            }
+            SHLWAPI.PathCanonicalize(dummy, tmp);
+            return dummy.ToString();
+        }
+
+        private static Boolean IsFolder(String path)
+        {
+            if (File.Exists(path) || Directory.Exists(path))
+            {
+                return (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
