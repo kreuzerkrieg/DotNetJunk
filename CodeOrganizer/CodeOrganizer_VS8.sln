@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeOrganizer_VS8", "CodeOrganizer_VS8.csproj", "{34481CA5-F487-45AA-830E-1CE6FBF59711}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPPHelperConfig", "..\CPPHelperConfig\CPPHelperConfig.csproj", "{056A22D0-C7EA-4756-8880-32A157C8037A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPPHelperConfig_VS8", "..\CPPHelperConfig\CPPHelperConfig.csproj", "{056A22D0-C7EA-4756-8880-32A157C8037A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

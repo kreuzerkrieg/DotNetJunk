@@ -60,6 +60,20 @@ namespace CodeOrganizer.Resources {
             }
         }
         
+        internal static System.Drawing.Bitmap Big_Cpp {
+            get {
+                object obj = ResourceManager.GetObject("Big_Cpp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Big_tools {
+            get {
+                object obj = ResourceManager.GetObject("Big_tools", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Document {
             get {
                 object obj = ResourceManager.GetObject("Document", resourceCulture);
@@ -98,13 +112,6 @@ namespace CodeOrganizer.Resources {
         internal static System.Drawing.Bitmap X {
             get {
                 object obj = ResourceManager.GetObject("X", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap X1 {
-            get {
-                object obj = ResourceManager.GetObject("X1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -161,6 +161,8 @@
     <None Include="Icons\Object.png" />
     <None Include="Icons\Tools.png" />
     <None Include="Icons\Libraries.png" />
+    <None Include="Resources\Big_Cpp.png" />
+    <None Include="Resources\Big_tools.png" />
     <Content Include="\\KREUZERKRIEG\Personal Data\Wolf\My Documents\Visual Studio 2010\Addins\CodeOrganizer - For Testing.AddIn">
       <Link>CodeOrganizer - For Testing.AddIn</Link>
     </Content>
