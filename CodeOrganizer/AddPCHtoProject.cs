@@ -47,29 +47,36 @@ namespace CodeOrganizer
 
         private void addPrecompiledHeaderFiles(VCProject oProject)
         {
-            String CPPPath = Path.Combine(oProject.ProjectDirectory, "stdafx.cpp");
-            StreamWriter oPCHCPP = File.CreateText(CPPPath);
-            oPCHCPP.Write(Resources.PCHData.stdafx_cpp);
-            oPCHCPP.Close();
-            VCFile CPP = (VCFile)oProject.AddFile(CPPPath);
-            IVCCollection oConfigurations = (IVCCollection)CPP.FileConfigurations;
-            foreach (VCFileConfiguration oConfig in oConfigurations)
+            try
             {
-                try
+                String CPPPath = Path.Combine(oProject.ProjectDirectory, "stdafx.cpp");
+                StreamWriter oPCHCPP = File.CreateText(CPPPath);
+                oPCHCPP.Write(Resources.PCHData.stdafx_cpp);
+                oPCHCPP.Close();
+                VCFile CPP = (VCFile)oProject.AddFile(CPPPath);
+                IVCCollection oConfigurations = (IVCCollection)CPP.FileConfigurations;
+                foreach (VCFileConfiguration oConfig in oConfigurations)
                 {
-                    VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)oConfig.Tool;
-                    oCompilerTool.UsePrecompiledHeader = pchOption.pchCreateUsingSpecific;
+                    try
+                    {
+                        VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)oConfig.Tool;
+                        oCompilerTool.UsePrecompiledHeader = pchOption.pchCreateUsingSpecific;
+                    }
+                    catch (Exception ex)
+                    {
+                        mLogger.PrintMessage("Failed when setting stdafx.cpp in configuration \"" + oConfig.Name + "\" to create precompiled headers. Reason: " + ex.Message);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    mLogger.PrintMessage("Failed when setting stdafx.cpp in configuration \"" + oConfig.Name + "\" to create precompiled headers. Reason: " + ex.Message);
-                }
+                String HPath = Path.Combine(oProject.ProjectDirectory, "stdafx.h");
+                StreamWriter oPCHH = File.CreateText(HPath);
+                oPCHH.Write(Resources.PCHData.stdafx_h.Replace(@"$$ProjectName$$", oProject.Name.ToUpperInvariant()));
+                oPCHH.Close();
+                oProject.AddFile(HPath);
             }
-            String HPath = Path.Combine(oProject.ProjectDirectory, "stdafx.h");
-            StreamWriter oPCHH = File.CreateText(HPath);
-            oPCHH.Write(Resources.PCHData.stdafx_h.Replace(@"$$ProjectName$$", oProject.Name.ToUpperInvariant()));
-            oPCHH.Close();
-            oProject.AddFile(HPath);
+            catch (Exception ex)
+            {
+                mLogger.PrintMessage("Failed when adding precompiled header files. Reason: " + ex.Message);
+            }
         }
 
         private void addPrecompiledHeaderIncludes(VCProject oProject)

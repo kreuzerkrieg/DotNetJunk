@@ -150,11 +150,11 @@ namespace CPPHelpers
 
         public static Boolean SaveFile(ProjectItem oFile)
         {
-            if (oFile.Document == null)
+            if (oFile.Document != null)
             {
-                return false;
+                return oFile.Document.Save("") == vsSaveStatus.vsSaveSucceeded;
             }
-            return oFile.Document.Save("") == vsSaveStatus.vsSaveSucceeded;
+            return false;
         }
 
         public static Boolean IsThirdPartyFile(String sPath, VCConfiguration oProjConfig)
