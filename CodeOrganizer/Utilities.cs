@@ -220,6 +220,38 @@ namespace CPPHelpers
             }
             return RetVal;
         }
+        public static Boolean RetrieveFilesToSkip(VCFile oFile, ref List<String> oIncludes)
+        {
+            try
+            {
+                ProjectItem oPI = ((ProjectItem)oFile.Object);
+                VCFileCodeModel oFCM = (VCFileCodeModel)oPI.FileCodeModel;
+                if (oFCM == null)
+                {
+                    throw new Exception("Cannot get FilecodeModel for file " + oFile.FullPath);
+                }
+                foreach (VCCodeElement oCE in oFCM.CodeElements)
+                {
+                    try
+                    {
+                        String DeclarationFile = (oCE).get_Location(vsCMWhere.vsCMWhereDeclaration);
+                        if (!oIncludes.Contains(DeclarationFile.ToUpperInvariant()))
+                        {
+                            oIncludes.Add(DeclarationFile.ToUpperInvariant());
+                        }
+                    }
+                    catch (Exception exep)
+                    {
+                        //silently die?
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve declaration files from " + oFile.FullPath + ". Reason:" + ex.Message);
+            }
+            return true;
+        }
 
         public static Boolean RetrieveIncludes(VCFile oFile, ref SortedDictionary<IncludesKey, VCCodeInclude> oIncludes)
         {
@@ -456,7 +488,8 @@ namespace CPPHelpers
         public static String PathCanonicalize(String pszFile1)
         {
             StringBuilder dummy = new StringBuilder(MAX_PATH);
-            String tmp = pszFile1;
+            String tmp = pszFile1.Replace("/", "\\");
+            String RetVal = tmp;
             if (IsFolder(tmp) && !tmp.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 tmp += Path.DirectorySeparatorChar.ToString();
@@ -464,9 +497,10 @@ namespace CPPHelpers
             if (Path.IsPathRooted(tmp))
             {
                 tmp = new DirectoryInfo(tmp).FullName;
+                SHLWAPI.PathCanonicalize(dummy, tmp);
+                RetVal = dummy.ToString();
             }
-            SHLWAPI.PathCanonicalize(dummy, tmp);
-            return dummy.ToString();
+            return RetVal;
         }
 
         private static Boolean IsFolder(String path)

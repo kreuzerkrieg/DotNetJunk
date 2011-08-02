@@ -32,6 +32,7 @@ namespace CPPHelpers
                 }
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
                 Utilities.RetrieveIncludes(oFile, ref oIncludes);
+                
                 List<IncludeStructEx> arrIncludesToRemove = new List<IncludeStructEx>();
 
                 foreach (VCCodeInclude oCI in oIncludes.Values)

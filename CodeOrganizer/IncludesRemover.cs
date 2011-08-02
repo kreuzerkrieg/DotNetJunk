@@ -40,10 +40,18 @@ namespace CPPHelpers
             try
             {
                 SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
+                List<String> SkipFiles = new List<String>();
                 Utilities.RetrieveIncludes(oFile, ref oIncludes);
+                Utilities.RetrieveFilesToSkip(oFile, ref SkipFiles);
 
                 foreach (VCCodeInclude oCI in oIncludes.Values)
                 {
+                    IncludeStructEx oInc = null;
+                    Boolean isLocal = Utilities.IsLocalFile(oCI, ref oInc);
+                    if (oInc != null && SkipFiles.Contains(oInc.sFullPath.ToUpperInvariant()))
+                    {
+                        continue;
+                    }
                     String sIncludeFile = oCI.FullName;
                     TextPoint oStartPoint = oCI.StartPoint;
                     EditPoint oEditPoint = oStartPoint.CreateEditPoint();
