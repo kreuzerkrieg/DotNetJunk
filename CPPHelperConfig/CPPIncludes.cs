@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 namespace CPPHelperConfig
 {
-    public partial class CPPHelperConfig : UserControl
+    public partial class CPPIncludes : UserControl
     {
-        public CPPHelperConfig()
+        public CPPIncludes()
         {
             InitializeComponent();
         }

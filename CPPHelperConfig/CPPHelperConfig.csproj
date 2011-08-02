@@ -59,11 +59,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CPPHelperConfig.cs">
+    <Compile Include="BeautifierDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CPPHelperConfig.Designer.cs">
-      <DependentUpon>CPPHelperConfig.cs</DependentUpon>
+    <Compile Include="BeautifierDialog.Designer.cs">
+      <DependentUpon>BeautifierDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CPPIncludes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CPPIncludes.Designer.cs">
+      <DependentUpon>CPPIncludes.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -74,9 +80,12 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CPPHelperConfig.resx">
+    <EmbeddedResource Include="BeautifierDialog.resx">
+      <DependentUpon>BeautifierDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CPPIncludes.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>CPPHelperConfig.cs</DependentUpon>
+      <DependentUpon>CPPIncludes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -1,6 +1,6 @@
 namespace CPPHelperConfig
 {
-    partial class CPPHelperConfig
+    partial class CPPIncludes
     {
         /// <summary>
         /// Required designer variable.
