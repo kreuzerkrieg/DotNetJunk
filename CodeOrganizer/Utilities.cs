@@ -116,7 +116,8 @@ namespace CPPHelpers
 
                 for (int i = 0; i < oDefaultIncludes.Count; i++)
                 {
-                    tmp.Add(oDefaultIncludes[i].FullName, oDefaultIncludes[i].FullName);
+                    if (!tmp.ContainsKey(oDefaultIncludes[i].FullName))
+                        tmp.Add(oDefaultIncludes[i].FullName, oDefaultIncludes[i].FullName);
                 }
 
                 for (int i = 0; i < sSplitArr.Length; i++)
