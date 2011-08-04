@@ -114,6 +114,11 @@
       <Link>CodeOrganizer - For Testing.AddIn</Link>
     </Content>
     <Content Include="CodeOrganizer.AddIn" />
+    <None Include="Resources\6.ico" />
+    <None Include="Resources\5.ico" />
+    <None Include="Resources\4.ico" />
+    <None Include="Resources\3.ico" />
+    <None Include="Resources\2.ico" />
     <None Include="Resources\1.ico" />
     <None Include="Icons\X.png" />
     <None Include="Icons\Tools.png" />
@@ -126,9 +131,13 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>echo ResGen Icons.resx
-echo Al.exe /embed:Icons.resources /culture:en-US /out:$(TargetName).resources.dll
-echo copy $(TargetName).resources.dll $(OutDir)CodeOrganizer.resources.dll</PostBuildEvent>
+    <PostBuildEvent>call "$(DevEnvDir)..\..\VC\vcvarsall.bat" x86
+cd $(ProjectDir)Resources
+ResGen Icons.resx
+Al.exe /embed:Icons.resources /culture:en-US /out:$(TargetName).resources.dll
+IF NOT EXIST $(TargetDir)en-US\ MKDIR $(TargetDir)en-US\
+copy $(TargetName).resources.dll $(TargetDir)en-US\$(TargetName).resources.dll
+exit</PostBuildEvent>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
