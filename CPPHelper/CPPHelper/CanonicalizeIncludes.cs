@@ -7,7 +7,7 @@ using EnvDTE;
 using Microsoft.VisualStudio.VCProjectEngine;
 using Microsoft.VisualStudio.VCCodeModel;
 using System.Text.RegularExpressions;
-using CodeOrganizer;
+using CPPHelper;
 using EnvDTE80;
 namespace CPPHelpers
 {

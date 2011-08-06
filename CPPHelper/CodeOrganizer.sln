@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeOrganizer", "CodeOrganizer.csproj", "{2411B423-93E9-4825-A390-1CAB58A44268}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPPHelper", "CPPHelper\CPPHelper.csproj", "{2411B423-93E9-4825-A390-1CAB58A44268}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPPHelperConfig", "..\CPPHelperConfig\CPPHelperConfig.csproj", "{056A22D0-C7EA-4756-8880-32A157C8037A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeOrganizer.resources", "..\IconResources\CodeOrganizer.resources.csproj", "{A8A1F7FE-E2AA-4BC8-A4DA-C9E5D4DF5ED9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPPHelperConfig", "CPPHelperConfig\CPPHelperConfig.csproj", "{056A22D0-C7EA-4756-8880-32A157C8037A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		{056A22D0-C7EA-4756-8880-32A157C8037A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{056A22D0-C7EA-4756-8880-32A157C8037A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{056A22D0-C7EA-4756-8880-32A157C8037A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8A1F7FE-E2AA-4BC8-A4DA-C9E5D4DF5ED9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8A1F7FE-E2AA-4BC8-A4DA-C9E5D4DF5ED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8A1F7FE-E2AA-4BC8-A4DA-C9E5D4DF5ED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8A1F7FE-E2AA-4BC8-A4DA-C9E5D4DF5ED9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

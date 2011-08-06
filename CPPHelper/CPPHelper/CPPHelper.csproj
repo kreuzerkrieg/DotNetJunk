@@ -10,7 +10,7 @@
     <StartupObject>
     </StartupObject>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>CodeOrganizer</AssemblyName>
+    <AssemblyName>CPPHelper</AssemblyName>
     <DeploymentDirectory>.\bin\</DeploymentDirectory>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
@@ -46,7 +46,7 @@
     <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v3.0'">RUNNING_ON_FW_3</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>CodeOrganizer</RootNamespace>
+    <RootNamespace>CPPHelper</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility">

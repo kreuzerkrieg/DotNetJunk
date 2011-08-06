@@ -1,5 +1,5 @@
 using System;
-using CodeOrganizer;
+using CPPHelper;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.VCCodeModel;

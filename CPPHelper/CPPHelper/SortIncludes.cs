@@ -5,7 +5,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.VCCodeModel;
 using Microsoft.VisualStudio.VCProjectEngine;
-using CodeOrganizer;
+using CPPHelper;
 
 namespace CPPHelpers
 {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CodeOrganizer.Resources {
+namespace CPPHelper.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace CodeOrganizer.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CodeOrganizer.Resources.PCHData", typeof(PCHData).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CPPHelper.Resources.PCHData", typeof(PCHData).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -82,9 +82,14 @@ namespace CodeOrganizer.Resources {
         /////
         ///#ifndef __$$ProjectName$$_STDAFX_H_INCLUDED__
         ///#define __$$ProjectName$$_STDAFX_H_INCLUDED__
+        ///
+        ///#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+        ///// Common includes
+        ///#include &quot;Common Files/ENGINE2 CLASS/defs.h&quot;
+        ///
         ///// TODO: reference additional headers your program requires here
         ///
-        ///#endif //__$$ProjectName$$_STDAFX_H_INCLUDED__.
+        ///#endif //__$$ProjectName$$_STDAFX_H_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string stdafx_h {
             get {

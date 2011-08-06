@@ -4,7 +4,7 @@ using System.Text;
 using EnvDTE;
 using EnvDTE80;
 
-namespace CodeOrganizer
+namespace CPPHelper
 {
     class OutputWindowLogger : Logger
     {
