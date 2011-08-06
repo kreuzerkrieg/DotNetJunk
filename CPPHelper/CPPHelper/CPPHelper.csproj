@@ -76,6 +76,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BuildCallbacks.cs" />
     <Compile Include="CanonicalizeIncludes.cs" />
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
@@ -154,7 +155,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodeOrganizer.AddIn" />
+    <Content Include="CPPHelper - For Testing.AddIn" />
+    <Content Include="CPPHelper.AddIn" />
     <None Include="Icons\X.png" />
     <None Include="Icons\Document.png" />
     <None Include="Icons\Event.png" />
@@ -163,9 +165,6 @@
     <None Include="Icons\Libraries.png" />
     <None Include="Resources\Big_Cpp.png" />
     <None Include="Resources\Big_tools.png" />
-    <Content Include="\\KREUZERKRIEG\Personal Data\Wolf\My Documents\Visual Studio 2010\Addins\CodeOrganizer - For Testing.AddIn">
-      <Link>CodeOrganizer - For Testing.AddIn</Link>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

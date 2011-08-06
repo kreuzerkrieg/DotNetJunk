@@ -26,11 +26,11 @@ namespace CPPHelper
             try
             {
                 mLogger.PrintMessage("Processing project ..::" + oProject.Name + "::..");
-                //if (!Utilities.BuildCurrentConfiguration(oProject))
-                //{
-                //    mLogger.PrintMessage("ERROR: Project '" + oProject.Name + "' must be in a buildable condition before you proceed! Aborting...");
-                //    return;
-                //}
+                if (!Utilities.BuildCurrentConfiguration(oProject))
+                {
+                    mLogger.PrintMessage("ERROR: Project '" + oProject.Name + "' must be in a buildable condition before you proceed! Aborting...");
+                    return;
+                }
                 VCConfiguration oActiveConfig = Utilities.GetCurrentConfiguration(oProject);
                 if (!Utilities.hasPrecompileHeader(oActiveConfig))
                 {

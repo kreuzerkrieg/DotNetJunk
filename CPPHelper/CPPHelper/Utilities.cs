@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.VCProjectEngine;
 using Microsoft.VisualStudio.VCCodeModel;
 using System.Text.RegularExpressions;
 using EnvDTE80;
+using CPPHelper;
 
 namespace CPPHelpers
 {
@@ -34,8 +35,32 @@ namespace CPPHelpers
         public static Boolean BuildCurrentConfiguration(VCProject oProject)
         {
             Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Build();
+            BuildCallbacks clbck = new BuildCallbacks();
+            try
+            {
+                DTE2 oApp = (DTE2)(((Project)(oProject.Object)).DTE);
+                OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
+                OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
+                oOutputWin.Parent.Activate();
+                oPane.Activate();
+                oPane.Clear();
+                System.Threading.Thread.Sleep(50);
+                VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
+                oCurConfig.BuildAndCallback(bldActionTypes.TOB_Build, clbck);
+                while (!clbck.Semaphore)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+                TextDocument oTD = oPane.TextDocument;
+                EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
+                oTD.Selection.SelectAll();
+                System.Threading.Thread.Sleep(50);
+                bRetVal = oTD.Selection.Text.Contains(" 0 failed");
+            }
+            catch (Exception ex)
+            {
+                bRetVal = false;
+            }
             return bRetVal;
         }
 
