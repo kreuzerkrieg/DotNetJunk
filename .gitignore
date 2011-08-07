@@ -3,7 +3,9 @@
 # visual studio
 *.suo
 *.ncb
+*.user
 
 # build
 bin/
 obj/
+*.resources
