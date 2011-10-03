@@ -9,8 +9,8 @@
     <StartupObject>
     </StartupObject>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>CodeOrganizer</AssemblyName>
-    <RootNamespace>CodeOrganizer</RootNamespace>
+    <AssemblyName>CPPHelper</AssemblyName>
+    <RootNamespace>CPPHelper</RootNamespace>
     <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0'">RUNNING_ON_FW_4</DefineConstants>
     <DefineConstants Condition="'$(TargetFrameworkVersion)' != 'v4.0'">NOT_RUNNING_ON_FW_4</DefineConstants>
   </PropertyGroup>
@@ -44,6 +44,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -51,6 +52,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BuildOperations.cs" />
     <Compile Include="CanonicalizeIncludes.cs" />
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
@@ -110,10 +112,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="C:\Users\ernestz\Documents\Visual Studio 2005\Addins\CodeOrganizer - For Testing.AddIn">
-      <Link>CodeOrganizer - For Testing.AddIn</Link>
-    </Content>
-    <Content Include="CodeOrganizer.AddIn" />
+    <Content Include="CPPHelper - For Testing.AddIn" />
+    <Content Include="CPPHelper.AddIn" />
     <None Include="Resources\6.ico" />
     <None Include="Resources\5.ico" />
     <None Include="Resources\4.ico" />

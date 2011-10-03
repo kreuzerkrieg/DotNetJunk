@@ -26,7 +26,7 @@ namespace CPPHelper
             try
             {
                 mLogger.PrintMessage("Processing project ..::" + oProject.Name + "::..");
-                if (!Utilities.BuildCurrentConfiguration(oProject))
+                if (!BuildOperations.BuildCurrentConfiguration(oProject))
                 {
                     mLogger.PrintMessage("ERROR: Project '" + oProject.Name + "' must be in a buildable condition before you proceed! Aborting...");
                     return;

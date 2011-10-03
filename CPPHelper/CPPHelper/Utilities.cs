@@ -10,12 +10,14 @@ using Microsoft.VisualStudio.VCCodeModel;
 using System.Text.RegularExpressions;
 using EnvDTE80;
 using CPPHelper;
+using System.Threading;
 
 namespace CPPHelpers
 {
     public static class Utilities
     {
         private static String sIncludePattern = ("\\.*#.*include.*(\\<|\\\")(?'FileName'.+)(\\>|\\\")");
+
         public static Boolean RebuildCurrentConfiguration(VCProject oProject)
         {
             Boolean bRetVal = false;
@@ -32,37 +34,44 @@ namespace CPPHelpers
             return bRetVal;
         }
 
-        public static Boolean BuildCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            BuildCallbacks clbck = new BuildCallbacks();
-            try
-            {
-                DTE2 oApp = (DTE2)(((Project)(oProject.Object)).DTE);
-                OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
-                OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
-                oOutputWin.Parent.Activate();
-                oPane.Activate();
-                oPane.Clear();
-                System.Threading.Thread.Sleep(50);
-                VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-                oCurConfig.BuildAndCallback(bldActionTypes.TOB_Build, clbck);
-                while (!clbck.Semaphore)
-                {
-                    System.Threading.Thread.Sleep(100);
-                }
-                TextDocument oTD = oPane.TextDocument;
-                EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
-                oTD.Selection.SelectAll();
-                System.Threading.Thread.Sleep(50);
-                bRetVal = oTD.Selection.Text.Contains(" 0 failed");
-            }
-            catch (Exception ex)
-            {
-                bRetVal = false;
-            }
-            return bRetVal;
-        }
+        //public static Boolean BuildCurrentConfiguration(VCProject oProject)
+        //{
+        //    Boolean RetVal = false;
+        //    try
+        //    {
+        //        VCProjectEngineEvents events = (VCProjectEngineEvents)((VCProjectEngine)oProject.VCProjectEngine).Events;
+        //        events.ProjectBuildFinished += new _dispVCProjectEngineEvents_ProjectBuildFinishedEventHandler(events_ProjectBuildFinished);
+        //        events.ProjectBuildStarted += new _dispVCProjectEngineEvents_ProjectBuildStartedEventHandler(events_ProjectBuildStarted);
+        //        VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
+        //        inProcess = true;
+        //        BuildErrors = 0;
+        //        oCurConfig.Build();
+
+        //        while (inProcess)
+        //        {
+        //            System.Windows.Forms.Application.DoEvents();
+        //        }
+        //        RetVal = (BuildErrors == 0);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        RetVal = false;
+        //    }
+        //    return RetVal;
+        //}
+
+        //static Boolean inProcess = true;
+        //static int BuildErrors = 0;
+        //static void events_ProjectBuildFinished(object Cfg, int warnings, int errors, bool Cancelled)
+        //{
+        //    inProcess = false;
+        //    BuildErrors = errors;
+        //}
+
+        //static void events_ProjectBuildStarted(object Cfg)
+        //{
+        //    inProcess = true;
+        //}
 
         public static Boolean LinkCurrentConfiguration(VCProject oProject)
         {
