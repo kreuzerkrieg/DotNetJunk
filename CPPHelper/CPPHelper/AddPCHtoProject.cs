@@ -15,10 +15,9 @@ namespace CPPHelper
 {
     class AddPCHtoProject
     {
-        public AddPCHtoProject(Logger logger, DTE2 oApplication)
+        public AddPCHtoProject(Logger logger)
         {
             mLogger = logger;
-            mApplication = oApplication;
         }
 
         public void PCHize(VCProject oProject)
@@ -28,7 +27,7 @@ namespace CPPHelper
                 mLogger.PrintMessage("Processing project ..::" + oProject.Name + "::..");
                 if (!BuildOperations.BuildCurrentConfiguration(oProject))
                 {
-                    mLogger.PrintMessage("ERROR: Project '" + oProject.Name + "' must be in a buildable condition before you proceed! Aborting...");
+                    mLogger.PrintError("ERROR: Project '" + oProject.Name + "' must be in a buildable condition before you proceed! Aborting...");
                     return;
                 }
                 VCConfiguration oActiveConfig = Utilities.GetCurrentConfiguration(oProject);
@@ -132,7 +131,6 @@ namespace CPPHelper
                 }
             }
         }
-        private DTE2 mApplication;
         private Logger mLogger;
     }
 }

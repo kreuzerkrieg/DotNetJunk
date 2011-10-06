@@ -58,9 +58,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IncludesRemover.cs" />
+    <Compile Include="LinkCleaner.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="PCHOrganizer.cs" />
+    <Compile Include="ProjectDependencyRebuilder.cs" />
     <Compile Include="Resources\Icons.Designer.cs" />
     <Compile Include="Resources\PCHData.Designer.cs" />
     <Compile Include="SortIncludes.cs" />

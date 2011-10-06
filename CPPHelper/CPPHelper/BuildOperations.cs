@@ -14,6 +14,19 @@ namespace CPPHelper
             public Boolean Build(VCProject oProject)
             {
                 Boolean RetVal = false;
+                try
+                {
+                    RetVal = BuildConfiguration(oProject, Utilities.GetCurrentConfiguration(oProject));
+                }
+                catch (Exception)
+                {
+                }
+                return RetVal;
+            }
+
+            public Boolean BuildConfiguration(VCProject oProject, VCConfiguration oConfig)
+            {
+                Boolean RetVal = false;
                 VCProjectEngineEvents events = null;
                 _dispVCProjectEngineEvents_ProjectBuildFinishedEventHandler FinishedHandler = null;
                 try
@@ -21,10 +34,9 @@ namespace CPPHelper
                     events = (VCProjectEngineEvents)((VCProjectEngine)oProject.VCProjectEngine).Events;
                     FinishedHandler = new _dispVCProjectEngineEvents_ProjectBuildFinishedEventHandler(events_ProjectBuildFinished);
                     events.ProjectBuildFinished += FinishedHandler;
-                    VCConfiguration oCurConfig = Utilities.GetCurrentConfiguration(oProject);
                     inProcess = true;
                     BuildErrors = 0;
-                    oCurConfig.Build();
+                    oConfig.Build();
 
                     while (inProcess)
                     {
@@ -73,6 +85,11 @@ namespace CPPHelper
         {
             BuildProject BuildOperation = new BuildProject();
             return BuildOperation.Build(oProject);
+        }
+        static public Boolean BuildConfiguration(VCProject oProject, VCConfiguration oConfig)
+        {
+            BuildProject BuildOperation = new BuildProject();
+            return BuildOperation.BuildConfiguration(oProject, oConfig);
         }
     }
 }

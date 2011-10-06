@@ -18,68 +18,6 @@ namespace CPPHelpers
     {
         private static String sIncludePattern = ("\\.*#.*include.*(\\<|\\\")(?'FileName'.+)(\\>|\\\")");
 
-        public static Boolean RebuildCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Rebuild();
-            return bRetVal;
-        }
-
-        public static Boolean CleanCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Clean();
-            return bRetVal;
-        }
-
-        //public static Boolean BuildCurrentConfiguration(VCProject oProject)
-        //{
-        //    Boolean RetVal = false;
-        //    try
-        //    {
-        //        VCProjectEngineEvents events = (VCProjectEngineEvents)((VCProjectEngine)oProject.VCProjectEngine).Events;
-        //        events.ProjectBuildFinished += new _dispVCProjectEngineEvents_ProjectBuildFinishedEventHandler(events_ProjectBuildFinished);
-        //        events.ProjectBuildStarted += new _dispVCProjectEngineEvents_ProjectBuildStartedEventHandler(events_ProjectBuildStarted);
-        //        VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-        //        inProcess = true;
-        //        BuildErrors = 0;
-        //        oCurConfig.Build();
-
-        //        while (inProcess)
-        //        {
-        //            System.Windows.Forms.Application.DoEvents();
-        //        }
-        //        RetVal = (BuildErrors == 0);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        RetVal = false;
-        //    }
-        //    return RetVal;
-        //}
-
-        //static Boolean inProcess = true;
-        //static int BuildErrors = 0;
-        //static void events_ProjectBuildFinished(object Cfg, int warnings, int errors, bool Cancelled)
-        //{
-        //    inProcess = false;
-        //    BuildErrors = errors;
-        //}
-
-        //static void events_ProjectBuildStarted(object Cfg)
-        //{
-        //    inProcess = true;
-        //}
-
-        public static Boolean LinkCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Relink();
-            return bRetVal;
-        }
 
         public static Boolean CompileFile(VCFile oFile)
         {
