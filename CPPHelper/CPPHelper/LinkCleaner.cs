@@ -41,9 +41,11 @@ namespace CPPHelper
                     List<String> NewLibs = Libraries.GetRange(i, 1);
                     Libraries.RemoveRange(i, 1);
                     Linker.AdditionalDependencies = String.Join(" ", Libraries.ToArray());
+                    oProject.Save();
                     if (BuildOperations.BuildConfiguration(oProject, oConfiguration))
                     {
                         i--;
+                        mLogger.PrintMessage("Library " + String.Join(" ", NewLibs.ToArray()) + " has been found unnesessary and removed.");
                     }
                     else
                     {

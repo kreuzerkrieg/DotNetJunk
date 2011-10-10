@@ -26,9 +26,11 @@ namespace CPPHelper
 
             public Boolean BuildConfiguration(VCProject oProject, VCConfiguration oConfig)
             {
-                Boolean RetVal = false;
+                Boolean RetVal = oConfig.UpToDate;
                 VCProjectEngineEvents events = null;
                 _dispVCProjectEngineEvents_ProjectBuildFinishedEventHandler FinishedHandler = null;
+                if (oConfig.UpToDate)
+                    return RetVal;
                 try
                 {
                     events = (VCProjectEngineEvents)((VCProjectEngine)oProject.VCProjectEngine).Events;
@@ -47,6 +49,7 @@ namespace CPPHelper
                 }
                 catch (Exception)
                 {
+                    RetVal = false;
                 }
                 return RetVal;
             }
@@ -77,6 +80,13 @@ namespace CPPHelper
         class RebuildProject
         {
             Boolean Rebuild(VCProject oProject)
+            {
+                return false;
+            }
+        }
+        class RelinkProject
+        {
+            Boolean Relink(VCProject oProject)
             {
                 return false;
             }
