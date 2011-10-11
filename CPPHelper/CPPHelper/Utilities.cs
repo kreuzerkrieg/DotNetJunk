@@ -339,6 +339,27 @@ namespace CPPHelpers
             VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oProjConfig.Tools).Item("VCCLCompilerTool");
             return oCompilerTool.UsePrecompiledHeader == pchOption.pchUseUsingSpecific;
         }
+
+        internal static List<VCProject> GetProjects(Project Proj)
+        {
+            List<VCProject> RetVal = new List<VCProject>();
+            if (Proj.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}")
+            {
+                RetVal.Add((VCProject)Proj.Object);
+            }
+            else if (Proj.Kind == ProjectKinds.vsProjectKindSolutionFolder)
+            {
+                foreach (ProjectItem Item in Proj.ProjectItems)
+                {
+                    if (Item.Object is Project)
+                    {
+                        List<VCProject> tmp = GetProjects((Project)Item.Object);
+                        RetVal.AddRange(tmp);
+                    }
+                }
+            }
+            return RetVal;
+        }
     }
 
     public class IncludesKey : IComparable
