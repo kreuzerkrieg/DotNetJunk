@@ -39,7 +39,7 @@ namespace CPPHelper
         {
             mOutputWin.Parent.Activate();
             mPane.Activate();
-            mPane.OutputTaskItemString(oMessage + Environment.NewLine, vsTaskPriority.vsTaskPriorityHigh, "CPP Helper Error", vsTaskIcon.vsTaskIconCompile, "", 0, "CPP Helper Cannot Continue before this error is fixed", true);
+            mPane.OutputTaskItemString(oMessage + Environment.NewLine, vsTaskPriority.vsTaskPriorityHigh, "CPP Helper Error", vsTaskIcon.vsTaskIconCompile, "", 0, "CPP Helper cannot continue before this error is fixed", true);
         }
 
         public void PrintHeaderMessage(Object oMessage)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.VCProjectEngine;
 using CPPHelpers;
+using EnvDTE;
+using EnvDTE80;
 
 namespace CPPHelper
 {
@@ -11,23 +13,35 @@ namespace CPPHelper
         public LinkCleaner(Logger logger)
         {
             mLogger = logger;
+            mDependencyCleaner = new ProjectDependencyRebuilder(logger);
         }
 
         public void RemoveUnnesessaryLibraries(VCProject oProject)
         {
-            IVCCollection oConfigurations = (IVCCollection)oProject.Configurations;
-            foreach (VCConfiguration oConfiguration in oConfigurations)
+            mLogger.PrintHeaderMessage("Removing additional dependencies for project '" + oProject.Name + "'");
+            try
             {
-                if (!BuildOperations.BuildConfiguration(oProject, oConfiguration))
+                DTE2 oApp = (DTE2)((((Project)(oProject).Object)).DTE);
+                mDependencyCleaner.CleanDependencies((Solution2)oApp.Solution);
+                IVCCollection oConfigurations = (IVCCollection)oProject.Configurations;
+                foreach (VCConfiguration oConfiguration in oConfigurations)
                 {
-                    mLogger.PrintError("ERROR: Project '" + oProject.Name + "' must be in a buildable condition before you proceed! Aborting...");
-                    return;
+                    if (!BuildOperations.BuildConfiguration(oProject, oConfiguration))
+                    {
+                        mLogger.PrintError("ERROR: Project '" + oProject.Name + "' configuration '" + oConfiguration.Name + "|" + oConfiguration.Platform + "' must be in a buildable condition before you proceed! Aborting...");
+                        continue;
+                    }
+                    else
+                    {
+                        CleanLibraries(oProject, oConfiguration);
+                    }
                 }
-                else
-                {
-                    CleanLibraries(oProject, oConfiguration);
-                }
+                mDependencyCleaner.RebuildDependecies((Solution2)oApp.Solution);
             }
+            catch (Exception)
+            {
+            }
+            mLogger.PrintHeaderMessage("Finished removing additional dependencies for project '" + oProject.Name + "'");
         }
 
         private void CleanLibraries(VCProject oProject, VCConfiguration oConfiguration)
@@ -45,7 +59,7 @@ namespace CPPHelper
                     if (BuildOperations.BuildConfiguration(oProject, oConfiguration))
                     {
                         i--;
-                        mLogger.PrintMessage("Library " + String.Join(" ", NewLibs.ToArray()) + " has been found unnesessary and removed.");
+                        mLogger.PrintMessage("Library " + String.Join(" ", NewLibs.ToArray()) + " in project '" + oProject.Name + "'has been found unnesessary and removed.");
                     }
                     else
                     {
@@ -66,5 +80,6 @@ namespace CPPHelper
             return RetVal;
         }
         private Logger mLogger;
+        private ProjectDependencyRebuilder mDependencyCleaner;
     }
 }

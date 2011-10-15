@@ -18,7 +18,58 @@ namespace CPPHelper
         public void RebuildDependecies(Solution2 oSolution)
         {
             IDictionary<String, List<String>> OutputData = new Dictionary<String, List<String>>(); 
-            IDictionary<String, List<String>> InputData = new Dictionary<String, List<String>>(); 
+            IDictionary<String, List<String>> InputData = new Dictionary<String, List<String>>();
+            GatherBuildData(oSolution, ref OutputData, ref InputData);
+            CleanDependencies(oSolution);
+            RebuildDependencies(oSolution, OutputData, InputData);
+        }
+
+        public void RebuildDependencies(Solution2 oSolution, IDictionary<String, List<String>> OutputData, IDictionary<String, List<String>> InputData)
+        {
+            // rebuild project dependencies
+            foreach (BuildDependency Dependency in oSolution.SolutionBuild.BuildDependencies)
+            {
+                List<String> Libs = new List<string>();
+                if (InputData.TryGetValue(Dependency.Project.UniqueName, out Libs))
+                {
+                    foreach (String Lib in Libs)
+                    {
+                        Boolean LibFound = false;
+                        foreach (KeyValuePair<String, List<String>> OutputFiles in OutputData)
+                        {
+                            if (OutputFiles.Value.Contains(Lib))
+                            {
+                                try
+                                {
+                                    Dependency.AddProject(OutputFiles.Key);
+                                    LibFound = true;
+                                    break;
+                                }
+                                catch (Exception)
+                                {
+                                    // most likely we are trying to create circular dependency
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void CleanDependencies(Solution2 oSolution)
+        {
+            //just clean everything
+            foreach (BuildDependency Dependency in oSolution.SolutionBuild.BuildDependencies)
+            {
+                if (Dependency.Project.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}")
+                {
+                    Dependency.RemoveAllProjects();
+                }
+            }
+        }
+
+        public void GatherBuildData(Solution2 oSolution, ref IDictionary<String, List<String>> OutputData, ref IDictionary<String, List<String>> InputData)
+        {
             Projects SolutionProjects = oSolution.Projects;
 
             foreach (Project Proj in SolutionProjects)
@@ -29,45 +80,6 @@ namespace CPPHelper
                     if (VCProj.Kind == "VCProject")
                     {
                         GatherBuildOutputData(VCProj, ref OutputData, ref InputData);
-                    }
-                    else
-                    {
-                        int i = 0;
-                    }
-                }
-            }
-
-            //just clean everything
-            foreach (BuildDependency Dependency in oSolution.SolutionBuild.BuildDependencies)
-            {
-                if (Dependency.Project.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}")
-                {
-                    Dependency.RemoveAllProjects();
-                }
-            }
-
-            // rebuild project dependencies
-            foreach (BuildDependency Dependency in oSolution.SolutionBuild.BuildDependencies)
-            {
-                List<String> Libs = new List<string>();
-                if (InputData.TryGetValue(Dependency.Project.UniqueName, out Libs))
-                {
-                    foreach (String Lib in Libs)
-                    {
-                        foreach (KeyValuePair<String, List<String>> OutputFiles in OutputData)
-                        {
-                            if (OutputFiles.Value.Contains(Lib))
-                            {
-                                try
-                                {
-                                    Dependency.AddProject(OutputFiles.Key);
-                                }
-                                catch (Exception)
-                                {
-                                    // most likely we are trying to create circular dependency
-                                }
-                            }
-                        }
                     }
                 }
             }
