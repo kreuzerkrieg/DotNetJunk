@@ -36,16 +36,16 @@ namespace CPPHelpers
                 oOutputWin.Parent.Activate();
                 oPane.Activate();
                 oPane.Clear();
-                System.Threading.Thread.Sleep(50);
+                Utilities.Sleep(50);
 #endif
                 VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
                 oCurConfig.Compile(rebuild, true);
-                System.Threading.Thread.Sleep(50);
+                Utilities.Sleep(50);
 #if !RUNNING_ON_FW_4
                 TextDocument oTD = oPane.TextDocument;
                 EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
                 oTD.Selection.SelectAll();
-                System.Threading.Thread.Sleep(50);
+                Utilities.Sleep(50);
                 bRetVal = oTD.Selection.Text.Contains(" 0 error");
 #else
                 bRetVal = true;
@@ -136,7 +136,7 @@ namespace CPPHelpers
             try
             {
                 List<DirectoryInfo> Includes = GetDefaultIncludePaths(oProjConfig);
-                Includes.Add(new DirectoryInfo(@"f:\Development\AC_SERVER_4_7\3rdParty\"));
+                Includes.Add(new DirectoryInfo(@"f:\Development\AC_SERVER_4_8_1\3rdParty\"));
                 StringComparer invICCmp = StringComparer.InvariantCultureIgnoreCase;
 
                 List<String> Prefixes = new List<String>(Includes.Count);
@@ -359,6 +359,42 @@ namespace CPPHelpers
                 }
             }
             return RetVal;
+        }
+
+        internal static VCFile GetFile(VCProject Project, String FileName)
+        {
+            IVCCollection Items = (IVCCollection)Project.Items;
+            return GetFile(Items, FileName);
+        }
+
+        internal static VCFile GetFile(IVCCollection Items, String FileName)
+        {
+            foreach (VCProjectItem Item in Items)
+            {
+                if (Item.Kind == "VCFile")
+                {
+                    if (Path.GetFullPath(((VCFile)Item).FullPath).Equals(Path.GetFullPath(FileName), StringComparison.InvariantCultureIgnoreCase))
+                        return ((VCFile)Item);
+                }
+                else if (Item.Kind == "VCFilter")
+                {
+                    VCFilter Filter = (VCFilter)Item;
+                    VCFile File = GetFile((IVCCollection)Filter.Items, FileName);
+                    if (File != null)
+                        return File;
+                }
+            }
+            return null;
+        }
+
+        internal static void Sleep(int Milliseconds)
+        {
+            DateTime Span = DateTime.Now;
+            while ((Span-DateTime.Now).Duration().Milliseconds < Milliseconds)
+            {
+                System.Windows.Forms.Application.DoEvents();
+            }
+            System.Windows.Forms.Application.DoEvents();
         }
     }
 

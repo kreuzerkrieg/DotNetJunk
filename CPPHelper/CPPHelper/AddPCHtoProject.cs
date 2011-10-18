@@ -18,6 +18,7 @@ namespace CPPHelper
         public AddPCHtoProject(Logger logger)
         {
             mLogger = logger;
+            StdAfxHName = "StdAfx.h";
         }
 
         public void PCHize(VCProject oProject)
@@ -33,10 +34,19 @@ namespace CPPHelper
                 VCConfiguration oActiveConfig = Utilities.GetCurrentConfiguration(oProject);
                 if (!Utilities.hasPrecompileHeader(oActiveConfig))
                 {
+                    addPrecompiledHeaderIncludes(oProject);
                     addPrecompiledHeaderToProject(oProject);
                     addPrecompiledHeaderFiles(oProject);
                 }
-                addPrecompiledHeaderIncludes(oProject);
+                else
+                {
+                    // Yes, I saw such cases...
+                    addPrecompiledHeaderFiles(oProject);
+                    // Ans yes, I saw this case too
+                    addPrecompiledHeaderToProject(oProject);
+                    mLogger.PrintMessage("Project '" + oProject.Name + "' already employs precompiled headers");
+                }
+                Utilities.Sleep(10);
             }
             catch (SystemException ex)
             {
@@ -48,11 +58,28 @@ namespace CPPHelper
         {
             try
             {
+                String HPath = Path.Combine(oProject.ProjectDirectory, StdAfxHName);
+                if (!File.Exists(HPath))
+                {
+                    StreamWriter oPCHH = File.CreateText(HPath);
+                    oPCHH.Write(Resources.PCHData.stdafx_h.Replace(@"$$ProjectName$$", oProject.Name.ToUpperInvariant()));
+                    oPCHH.Close();
+                }
+                if (Utilities.GetFile(oProject,HPath) == null)
+                    oProject.AddFile(HPath);
+
                 String CPPPath = Path.Combine(oProject.ProjectDirectory, "stdafx.cpp");
-                StreamWriter oPCHCPP = File.CreateText(CPPPath);
-                oPCHCPP.Write(Resources.PCHData.stdafx_cpp);
-                oPCHCPP.Close();
-                VCFile CPP = (VCFile)oProject.AddFile(CPPPath);
+                if (!File.Exists(CPPPath))
+                {
+                    StreamWriter oPCHCPP = File.CreateText(CPPPath);
+                    oPCHCPP.Write(Resources.PCHData.stdafx_cpp);
+                    oPCHCPP.Close();
+                }
+                VCFile CPP = null;
+                if (Utilities.GetFile(oProject, CPPPath) == null)
+                    CPP = (VCFile)oProject.AddFile(CPPPath);
+                else
+                    CPP = Utilities.GetFile(oProject, CPPPath);
                 IVCCollection oConfigurations = (IVCCollection)CPP.FileConfigurations;
                 foreach (VCFileConfiguration oConfig in oConfigurations)
                 {
@@ -66,11 +93,6 @@ namespace CPPHelper
                         mLogger.PrintMessage("Failed when setting stdafx.cpp in configuration \"" + oConfig.Name + "\" to create precompiled headers. Reason: " + ex.Message);
                     }
                 }
-                String HPath = Path.Combine(oProject.ProjectDirectory, "stdafx.h");
-                StreamWriter oPCHH = File.CreateText(HPath);
-                oPCHH.Write(Resources.PCHData.stdafx_h.Replace(@"$$ProjectName$$", oProject.Name.ToUpperInvariant()));
-                oPCHH.Close();
-                oProject.AddFile(HPath);
             }
             catch (Exception ex)
             {
@@ -81,12 +103,19 @@ namespace CPPHelper
         private void addPrecompiledHeaderIncludes(VCProject oProject)
         {
             IVCCollection oConfigurations = ((IVCCollection)oProject.Configurations);
+            StdAfxHName = "";
             foreach (VCConfiguration oConfig in oConfigurations)
             {
                 try
                 {
-                    VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oConfig.Tools).Item("VCCLCompilerTool");
+                    Object ToolObject = ((IVCCollection)oConfig.Tools).Item("VCCLCompilerTool");
+                    VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)(ToolObject);
+                    oConfig.ClearToolProperty(ToolObject, "UsePrecompiledHeader");
+                    oConfig.ClearToolProperty(ToolObject, "PrecompiledHeaderFile");
+                    oConfig.ClearToolProperty(ToolObject, "PrecompiledHeaderThrough");
                     oCompilerTool.UsePrecompiledHeader = pchOption.pchUseUsingSpecific;
+                    if (String.IsNullOrEmpty(StdAfxHName))
+                        StdAfxHName = oCompilerTool.PrecompiledHeaderFile;
                 }
                 catch (Exception ex)
                 {
@@ -104,6 +133,7 @@ namespace CPPHelper
             foreach (VCFile oFile in (IVCCollection)oProject.Files)
 #endif
             {
+                Boolean ExcludedFile = true;
                 try
                 {
                     if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
@@ -115,22 +145,42 @@ namespace CPPHelper
                     if (oFile.FileType == eFileType.eFileTypeCppCode)
 #endif
                     {
+                        foreach (VCFileConfiguration Config in (IVCCollection)oFile.FileConfigurations)
+                        {
+                            try
+                            {
+                                VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)Config.Tool;
+                                if (oCompilerTool.UsePrecompiledHeader != pchOption.pchUseUsingSpecific)
+                                {
+                                    oCompilerTool.UsePrecompiledHeader = pchOption.pchUseUsingSpecific;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                mLogger.PrintMessage("Failed when setting configuration \"" + Config.Name + "\" to use precompiled headers. Reason: " + ex.Message);
+                            }
+                            ExcludedFile &= Config.ExcludedFromBuild;
+                        }
+                        // This file excluded from ALL configurations, just skip it
+                        if (ExcludedFile)
+                            continue;
                         VCFileCodeModel oFCM = (VCFileCodeModel)oPI.FileCodeModel;
                         if (oFCM == null)
                         {
                             throw new Exception("Cannot get FilecodeModel for file " + oFile.Name);
                         }
                         EditPoint oEditPoint = oFCM.StartPoint.CreateEditPoint();
-                        oEditPoint.Insert("#include \"stdafx.h\"" + Environment.NewLine);
+                        oEditPoint.Insert("#include \"" + StdAfxHName + "\"" + Environment.NewLine);
                         Utilities.SaveFile(oPI);
                     }
                 }
                 catch (Exception ex)
                 {
-                    mLogger.PrintMessage("Failed when adding \"stdafx.h\" include directive to \"" + oFile.Name + "\". Reason: " + ex.Message);
+                    mLogger.PrintMessage("Failed when adding \"" + StdAfxHName + "\" include directive to \"" + oFile.Name + "\". Reason: " + ex.Message);
                 }
             }
         }
         private Logger mLogger;
+        private String StdAfxHName;
     }
 }

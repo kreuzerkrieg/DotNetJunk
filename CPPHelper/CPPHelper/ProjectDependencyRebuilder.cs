@@ -53,6 +53,7 @@ namespace CPPHelper
                         }
                     }
                 }
+                Utilities.Sleep(10);
             }
         }
 

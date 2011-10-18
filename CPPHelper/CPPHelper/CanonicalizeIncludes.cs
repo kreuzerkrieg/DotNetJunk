@@ -43,6 +43,7 @@ namespace CPPHelpers
                     {
                         arrIncludesToRemove.Add(oInc);
                     }
+                    Utilities.Sleep(10);
                 }
 
                 for (int j = 0; j < arrIncludesToRemove.Count; j++)
@@ -70,6 +71,7 @@ namespace CPPHelpers
                         mLogger.PrintMessage("Failed to parse file: " + oFile.FullPath + " while canonicalizing includes. Reason: " + ex.Message);
                         return false;
                     }
+                    Utilities.Sleep(10);
                 }
 
             }

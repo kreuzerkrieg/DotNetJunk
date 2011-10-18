@@ -46,6 +46,7 @@ namespace CPPHelpers
                     arrToPch.Sort();
                     for (int i = 0; i < arrToPch.Count; i++)
                     {
+                        Utilities.Sleep(10);
                         MoveToPCH(arrToPch[i], oStdAfx);
                     }
                 }
@@ -105,6 +106,7 @@ namespace CPPHelpers
                 {
                     foreach (VCCodeInclude oCI in oIncludes.Values)
                     {
+                        Utilities.Sleep(10);
                         TextPoint oStartPoint = oCI.StartPoint;
                         EditPoint oEditPoint = oStartPoint.CreateEditPoint();
                         String sTmpInclude = oEditPoint.GetText(oCI.EndPoint);
