@@ -34,7 +34,6 @@ namespace CPPHelper
                 {
                     foreach (String Lib in Libs)
                     {
-                        Boolean LibFound = false;
                         foreach (KeyValuePair<String, List<String>> OutputFiles in OutputData)
                         {
                             if (OutputFiles.Value.Contains(Lib))
@@ -42,7 +41,6 @@ namespace CPPHelper
                                 try
                                 {
                                     Dependency.AddProject(OutputFiles.Key);
-                                    LibFound = true;
                                     break;
                                 }
                                 catch (Exception)

@@ -51,7 +51,7 @@ namespace CPPHelpers
                 bRetVal = true;
 #endif
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return bRetVal;
             }
@@ -118,7 +118,6 @@ namespace CPPHelpers
             {
                 throw new Exception("Failed to parse additional include folders. Reason: " + ex.Message, ex);
             }
-            return sArr;
         }
 
         public static Boolean SaveFile(ProjectItem oFile)
@@ -155,7 +154,6 @@ namespace CPPHelpers
             catch (Exception ex)
             {
                 throw new Exception("Determining if file belongs to third party is failed. Reason: " + ex.Message);
-                return false;
             }
             return false;
         }
@@ -186,7 +184,7 @@ namespace CPPHelpers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //die in solitude
             }
@@ -212,7 +210,7 @@ namespace CPPHelpers
                             oIncludes.Add(DeclarationFile.ToUpperInvariant());
                         }
                     }
-                    catch (Exception exep)
+                    catch (Exception)
                     {
                         //silently die?
                     }
@@ -503,7 +501,7 @@ namespace CPPHelpers
         public static String PathRelativePathTo_File(String pszFile1, String pszFile2)
         {
             StringBuilder dummy = new StringBuilder(MAX_PATH);
-            PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Archive, PathCanonicalize(pszFile2), FileAttributes.Archive);
+            PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Directory, PathCanonicalize(pszFile2), FileAttributes.Archive);
             return PathCanonicalize(dummy.ToString());
         }
 
@@ -526,9 +524,9 @@ namespace CPPHelpers
             if (Path.IsPathRooted(tmp))
             {
                 tmp = new DirectoryInfo(tmp).FullName;
-                SHLWAPI.PathCanonicalize(dummy, tmp);
-                RetVal = dummy.ToString();
             }
+            SHLWAPI.PathCanonicalize(dummy, tmp);
+            RetVal = dummy.ToString();
             return RetVal;
         }
 
