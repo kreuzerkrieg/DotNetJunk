@@ -155,7 +155,6 @@ namespace CPPHelpers
             {
                 throw new Exception("Determining if file belongs to third party is failed. Reason: " + ex.Message);
             }
-            return false;
         }
 
         private static List<DirectoryInfo> GetDefaultIncludePaths(VCConfiguration oProjConfig)
@@ -385,6 +384,33 @@ namespace CPPHelpers
             return null;
         }
 
+        internal static Boolean HasInclude(VCFile File, String FileName, Boolean FullPath, ref VCCodeInclude IncludeObject)
+        {
+            SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
+            RetrieveIncludes(File, ref oIncludes);
+            foreach (KeyValuePair<IncludesKey, VCCodeInclude> Include in oIncludes)
+            {
+                if (!FullPath)
+                {
+                    if (Path.GetFileName(Include.Key.sInclude).Equals(Path.GetFileName(FileName), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        IncludeObject = Include.Value;
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (Path.GetFullPath(Include.Key.sInclude).Equals(Path.GetFullPath(FileName), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        IncludeObject = Include.Value;
+                        return true;
+                    }
+                }
+                Utilities.Sleep(5);
+            }
+            IncludeObject = null;
+            return false;
+        }
         internal static void Sleep(int Milliseconds)
         {
             DateTime Span = DateTime.Now;

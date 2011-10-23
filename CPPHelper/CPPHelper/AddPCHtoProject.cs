@@ -40,10 +40,6 @@ namespace CPPHelper
                 }
                 else
                 {
-                    // Yes, I saw such cases...
-                    addPrecompiledHeaderFiles(oProject);
-                    // Ans yes, I saw this case too
-                    addPrecompiledHeaderToProject(oProject);
                     mLogger.PrintMessage("Project '" + oProject.Name + "' already employs precompiled headers");
                 }
                 Utilities.Sleep(10);
@@ -115,7 +111,7 @@ namespace CPPHelper
                     oConfig.ClearToolProperty(ToolObject, "PrecompiledHeaderThrough");
                     oCompilerTool.UsePrecompiledHeader = pchOption.pchUseUsingSpecific;
                     if (String.IsNullOrEmpty(StdAfxHName))
-                        StdAfxHName = oCompilerTool.PrecompiledHeaderFile;
+                        StdAfxHName = oConfig.Evaluate(oCompilerTool.PrecompiledHeaderThrough);
                 }
                 catch (Exception ex)
                 {
@@ -138,6 +134,18 @@ namespace CPPHelper
                 {
                     if (Utilities.IsThirdPartyFile(oFile.FullPath, Utilities.GetCurrentConfiguration((VCProject)oFile.project)))
                     {
+                        foreach (VCFileConfiguration Config in (IVCCollection)oFile.FileConfigurations)
+                        {
+                            try
+                            {
+                                VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)Config.Tool;
+                                oCompilerTool.UsePrecompiledHeader = pchOption.pchNone;
+                            }
+                            catch (Exception ex)
+                            {
+                                mLogger.PrintMessage("Failed when setting configuration \"" + Config.Name + "\" NOT to use precompiled headers in third-party source file. Reason: " + ex.Message);
+                            }                          
+                        }
                         continue;
                     }
                     ProjectItem oPI = ((ProjectItem)oFile.Object);
@@ -168,6 +176,13 @@ namespace CPPHelper
                         if (oFCM == null)
                         {
                             throw new Exception("Cannot get FilecodeModel for file " + oFile.Name);
+                        }
+                        VCCodeInclude PCHInclude = null;
+                        if (Utilities.HasInclude(oFile, StdAfxHName, false, ref PCHInclude))
+                        {
+                            EditPoint EP = PCHInclude.StartPoint.CreateEditPoint();
+                            EP.Delete(PCHInclude.EndPoint.CreateEditPoint());
+                            EP.DeleteWhitespace(vsWhitespaceOptions.vsWhitespaceOptionsVertical);
                         }
                         EditPoint oEditPoint = oFCM.StartPoint.CreateEditPoint();
                         oEditPoint.Insert("#include \"" + StdAfxHName + "\"" + Environment.NewLine);
