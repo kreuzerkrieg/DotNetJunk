@@ -295,7 +295,9 @@ namespace CPPHelpers
                 List<String> oIncludesArr = GetIncludePaths(oProject);
                 foreach (String IncPath in oIncludesArr)
                 {
-                    oRetVal.Add(new KeyValuePair<String, String>(SHLWAPI.PathCanonicalize(IncPath), SHLWAPI.PathCanonicalize(Path.Combine(IncPath, sIncFullName))));
+                    String FullCanonicalPath = SHLWAPI.PathCanonicalize(Path.Combine(IncPath, sIncFullName));
+
+                    oRetVal.Add(new KeyValuePair<String, String>(IncPath, FullCanonicalPath));
                 }
             }
             return oRetVal;
@@ -314,6 +316,11 @@ namespace CPPHelpers
                 {
                     oInc.oInc = oCI;
                     oInc.sFileName = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    if (oInc.sFileName.StartsWith("."))
+                    {
+                        // ok, most likely it is relative path, lets explore further possibilities
+                        continue;
+                    }
                     oInc.sFullPath = oFI.FullName;
                     oInc.sRelativePath = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
                     if (SHLWAPI.PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == SHLWAPI.PathCanonicalize(oProject.ProjectDirectory))
@@ -323,6 +330,32 @@ namespace CPPHelpers
                     else
                     {
                         oInc.bLocalFile = false;
+                    }
+                    return oInc.bLocalFile;
+                }
+            }
+
+            foreach (KeyValuePair<String, String> pair in PossibleLocations)
+            {
+                // we screwed searching non relative path, now try again, return relative path and report local file
+                FileInfo oFI = new FileInfo(pair.Value);
+                if (oFI.Exists)
+                {
+                    oInc.oInc = oCI;
+                    oInc.sFileName = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    oInc.sFullPath = oFI.FullName;
+                    oInc.sRelativePath = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    if (SHLWAPI.PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == SHLWAPI.PathCanonicalize(oProject.ProjectDirectory))
+                    {
+                        oInc.bLocalFile = true;
+                    }
+                    else if (oInc.sFileName.StartsWith("."))
+                    {
+                        oInc.bLocalFile = true;
+                    }
+                    else
+                    {
+                        oInc.bLocalFile = true;
                     }
                     return oInc.bLocalFile;
                 }
@@ -526,9 +559,27 @@ namespace CPPHelpers
 
         public static String PathRelativePathTo_File(String pszFile1, String pszFile2)
         {
-            StringBuilder dummy = new StringBuilder(MAX_PATH);
-            PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Directory, PathCanonicalize(pszFile2), FileAttributes.Archive);
-            return PathCanonicalize(dummy.ToString());
+            //StringBuilder dummy = new StringBuilder(MAX_PATH);
+            //PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Directory, PathCanonicalize(pszFile2), FileAttributes.Archive);
+            //return dummy.ToString();
+            if (String.IsNullOrEmpty(pszFile1)) throw new ArgumentNullException("fromPath");
+            if (String.IsNullOrEmpty(pszFile2)) throw new ArgumentNullException("toPath");
+            if (IsFolder(pszFile1) && !pszFile1.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                pszFile1 += Path.DirectorySeparatorChar.ToString();
+            }
+            if (IsFolder(pszFile2) && !pszFile2.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                pszFile2 += Path.DirectorySeparatorChar.ToString();
+            }
+            Uri fromUri = new Uri(pszFile1);
+            Uri toUri = new Uri(pszFile2);
+
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            return relativePath.Replace('/', Path.DirectorySeparatorChar);
+
         }
 
         public static String PathRelativePathTo_Folder(String pszFile1, String pszFile2)
