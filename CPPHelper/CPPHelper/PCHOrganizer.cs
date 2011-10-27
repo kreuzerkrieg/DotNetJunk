@@ -46,6 +46,7 @@ namespace CPPHelpers
                     arrToPch.Sort();
                     for (int i = 0; i < arrToPch.Count; i++)
                     {
+                        Utilities.Sleep(10);
                         MoveToPCH(arrToPch[i], oStdAfx);
                     }
                 }
@@ -101,10 +102,25 @@ namespace CPPHelpers
             {
                 List<KeyValuePair<TextPoint, TextPoint>> arrIncludesToRemove = new List<KeyValuePair<TextPoint, TextPoint>>();
                 VCConfiguration oCurConfig = Utilities.GetCurrentConfiguration((VCProject)oFile.project);
+                if (Utilities.IsThirdPartyFile(oFile.FullPath, oCurConfig))
+                {
+                    // Thirdparty source file, skip it
+                    return bRetVal;
+                }
+
+                VCFileConfiguration Config = (VCFileConfiguration)((IVCCollection)oFile.FileConfigurations).Item(oCurConfig.Name);
+                VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)Config.Tool;
+                if (oCompilerTool.UsePrecompiledHeader != pchOption.pchUseUsingSpecific)
+                {
+                    // this file is not using precompiled headers, dont move files to stdafx.h
+                    return bRetVal;
+                }
+
                 try
                 {
                     foreach (VCCodeInclude oCI in oIncludes.Values)
                     {
+                        Utilities.Sleep(10);
                         TextPoint oStartPoint = oCI.StartPoint;
                         EditPoint oEditPoint = oStartPoint.CreateEditPoint();
                         String sTmpInclude = oEditPoint.GetText(oCI.EndPoint);

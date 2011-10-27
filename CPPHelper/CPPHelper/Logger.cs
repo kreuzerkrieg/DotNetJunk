@@ -8,6 +8,7 @@ namespace CPPHelper
     {
         void OpenLog();
         void PrintMessage(Object oMessage);
+        void PrintError(Object oMessage);
         void PrintHeaderMessage(Object oMessage);
         void CloseLog();
     }

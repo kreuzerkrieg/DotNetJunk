@@ -10,67 +10,14 @@ using Microsoft.VisualStudio.VCCodeModel;
 using System.Text.RegularExpressions;
 using EnvDTE80;
 using CPPHelper;
+using System.Threading;
 
 namespace CPPHelpers
 {
     public static class Utilities
     {
         private static String sIncludePattern = ("\\.*#.*include.*(\\<|\\\")(?'FileName'.+)(\\>|\\\")");
-        public static Boolean RebuildCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Rebuild();
-            return bRetVal;
-        }
 
-        public static Boolean CleanCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Clean();
-            return bRetVal;
-        }
-
-        public static Boolean BuildCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            BuildCallbacks clbck = new BuildCallbacks();
-            try
-            {
-                DTE2 oApp = (DTE2)(((Project)(oProject.Object)).DTE);
-                OutputWindow oOutputWin = (OutputWindow)oApp.ToolWindows.OutputWindow;
-                OutputWindowPane oPane = oOutputWin.OutputWindowPanes.Item("Build");
-                oOutputWin.Parent.Activate();
-                oPane.Activate();
-                oPane.Clear();
-                System.Threading.Thread.Sleep(50);
-                VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-                oCurConfig.BuildAndCallback(bldActionTypes.TOB_Build, clbck);
-                while (!clbck.Semaphore)
-                {
-                    System.Threading.Thread.Sleep(100);
-                }
-                TextDocument oTD = oPane.TextDocument;
-                EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
-                oTD.Selection.SelectAll();
-                System.Threading.Thread.Sleep(50);
-                bRetVal = oTD.Selection.Text.Contains(" 0 failed");
-            }
-            catch (Exception ex)
-            {
-                bRetVal = false;
-            }
-            return bRetVal;
-        }
-
-        public static Boolean LinkCurrentConfiguration(VCProject oProject)
-        {
-            Boolean bRetVal = false;
-            VCConfiguration oCurConfig = GetCurrentConfiguration(oProject);
-            oCurConfig.Relink();
-            return bRetVal;
-        }
 
         public static Boolean CompileFile(VCFile oFile)
         {
@@ -89,22 +36,22 @@ namespace CPPHelpers
                 oOutputWin.Parent.Activate();
                 oPane.Activate();
                 oPane.Clear();
-                System.Threading.Thread.Sleep(50);
+                Utilities.Sleep(50);
 #endif
                 VCFileConfiguration oCurConfig = GetCurrentFileConfiguration(oFile);
                 oCurConfig.Compile(rebuild, true);
-                System.Threading.Thread.Sleep(50);
+                Utilities.Sleep(50);
 #if !RUNNING_ON_FW_4
                 TextDocument oTD = oPane.TextDocument;
                 EditPoint oOutEP = oTD.CreateEditPoint(oTD.StartPoint);
                 oTD.Selection.SelectAll();
-                System.Threading.Thread.Sleep(50);
+                Utilities.Sleep(50);
                 bRetVal = oTD.Selection.Text.Contains(" 0 error");
 #else
                 bRetVal = true;
 #endif
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return bRetVal;
             }
@@ -171,7 +118,6 @@ namespace CPPHelpers
             {
                 throw new Exception("Failed to parse additional include folders. Reason: " + ex.Message, ex);
             }
-            return sArr;
         }
 
         public static Boolean SaveFile(ProjectItem oFile)
@@ -189,7 +135,7 @@ namespace CPPHelpers
             try
             {
                 List<DirectoryInfo> Includes = GetDefaultIncludePaths(oProjConfig);
-                Includes.Add(new DirectoryInfo(@"f:\Development\AC_SERVER_4_7\3rdParty\"));
+                Includes.Add(new DirectoryInfo(@"f:\Development\AC_SERVER_4_8_1\3rdParty\"));
                 StringComparer invICCmp = StringComparer.InvariantCultureIgnoreCase;
 
                 List<String> Prefixes = new List<String>(Includes.Count);
@@ -208,9 +154,7 @@ namespace CPPHelpers
             catch (Exception ex)
             {
                 throw new Exception("Determining if file belongs to third party is failed. Reason: " + ex.Message);
-                return false;
             }
-            return false;
         }
 
         private static List<DirectoryInfo> GetDefaultIncludePaths(VCConfiguration oProjConfig)
@@ -239,7 +183,7 @@ namespace CPPHelpers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //die in solitude
             }
@@ -265,7 +209,7 @@ namespace CPPHelpers
                             oIncludes.Add(DeclarationFile.ToUpperInvariant());
                         }
                     }
-                    catch (Exception exep)
+                    catch (Exception)
                     {
                         //silently die?
                     }
@@ -351,7 +295,9 @@ namespace CPPHelpers
                 List<String> oIncludesArr = GetIncludePaths(oProject);
                 foreach (String IncPath in oIncludesArr)
                 {
-                    oRetVal.Add(new KeyValuePair<String, String>(SHLWAPI.PathCanonicalize(IncPath), SHLWAPI.PathCanonicalize(Path.Combine(IncPath, sIncFullName))));
+                    String FullCanonicalPath = SHLWAPI.PathCanonicalize(Path.Combine(IncPath, sIncFullName));
+
+                    oRetVal.Add(new KeyValuePair<String, String>(IncPath, FullCanonicalPath));
                 }
             }
             return oRetVal;
@@ -370,6 +316,11 @@ namespace CPPHelpers
                 {
                     oInc.oInc = oCI;
                     oInc.sFileName = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    if (oInc.sFileName.StartsWith("."))
+                    {
+                        // ok, most likely it is relative path, lets explore further possibilities
+                        continue;
+                    }
                     oInc.sFullPath = oFI.FullName;
                     oInc.sRelativePath = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
                     if (SHLWAPI.PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == SHLWAPI.PathCanonicalize(oProject.ProjectDirectory))
@@ -383,6 +334,32 @@ namespace CPPHelpers
                     return oInc.bLocalFile;
                 }
             }
+
+            foreach (KeyValuePair<String, String> pair in PossibleLocations)
+            {
+                // we screwed searching non relative path, now try again, return relative path and report local file
+                FileInfo oFI = new FileInfo(pair.Value);
+                if (oFI.Exists)
+                {
+                    oInc.oInc = oCI;
+                    oInc.sFileName = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    oInc.sFullPath = oFI.FullName;
+                    oInc.sRelativePath = SHLWAPI.PathRelativePathTo_File(pair.Key, oFI.FullName);
+                    if (SHLWAPI.PathCommonPrefix(oFI.FullName, oProject.ProjectDirectory) == SHLWAPI.PathCanonicalize(oProject.ProjectDirectory))
+                    {
+                        oInc.bLocalFile = true;
+                    }
+                    else if (oInc.sFileName.StartsWith("."))
+                    {
+                        oInc.bLocalFile = true;
+                    }
+                    else
+                    {
+                        oInc.bLocalFile = true;
+                    }
+                    return oInc.bLocalFile;
+                }
+            }
             oInc = null;
             return false;
         }
@@ -391,6 +368,90 @@ namespace CPPHelpers
         {
             VCCLCompilerTool oCompilerTool = (VCCLCompilerTool)((IVCCollection)oProjConfig.Tools).Item("VCCLCompilerTool");
             return oCompilerTool.UsePrecompiledHeader == pchOption.pchUseUsingSpecific;
+        }
+
+        internal static List<VCProject> GetProjects(Project Proj)
+        {
+            List<VCProject> RetVal = new List<VCProject>();
+            if (Proj.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}")
+            {
+                RetVal.Add((VCProject)Proj.Object);
+            }
+            else if (Proj.Kind == ProjectKinds.vsProjectKindSolutionFolder)
+            {
+                foreach (ProjectItem Item in Proj.ProjectItems)
+                {
+                    if (Item.Object is Project)
+                    {
+                        List<VCProject> tmp = GetProjects((Project)Item.Object);
+                        RetVal.AddRange(tmp);
+                    }
+                }
+            }
+            return RetVal;
+        }
+
+        internal static VCFile GetFile(VCProject Project, String FileName)
+        {
+            IVCCollection Items = (IVCCollection)Project.Items;
+            return GetFile(Items, FileName);
+        }
+
+        internal static VCFile GetFile(IVCCollection Items, String FileName)
+        {
+            foreach (VCProjectItem Item in Items)
+            {
+                if (Item.Kind == "VCFile")
+                {
+                    if (Path.GetFullPath(((VCFile)Item).FullPath).Equals(Path.GetFullPath(FileName), StringComparison.InvariantCultureIgnoreCase))
+                        return ((VCFile)Item);
+                }
+                else if (Item.Kind == "VCFilter")
+                {
+                    VCFilter Filter = (VCFilter)Item;
+                    VCFile File = GetFile((IVCCollection)Filter.Items, FileName);
+                    if (File != null)
+                        return File;
+                }
+            }
+            return null;
+        }
+
+        internal static Boolean HasInclude(VCFile File, String FileName, Boolean FullPath, ref VCCodeInclude IncludeObject)
+        {
+            SortedDictionary<IncludesKey, VCCodeInclude> oIncludes = new SortedDictionary<IncludesKey, VCCodeInclude>();
+            RetrieveIncludes(File, ref oIncludes);
+            foreach (KeyValuePair<IncludesKey, VCCodeInclude> Include in oIncludes)
+            {
+                if (!FullPath)
+                {
+                    if (Path.GetFileName(Include.Key.sInclude).Equals(Path.GetFileName(FileName), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        IncludeObject = Include.Value;
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (Path.GetFullPath(Include.Key.sInclude).Equals(Path.GetFullPath(FileName), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        IncludeObject = Include.Value;
+                        return true;
+                    }
+                }
+                Utilities.Sleep(5);
+            }
+            IncludeObject = null;
+            return false;
+        }
+        internal static void Sleep(int Milliseconds)
+        {
+            DateTime Span = DateTime.Now;
+            while ((Span-DateTime.Now).Duration().Milliseconds < Milliseconds)
+            {
+                System.Windows.Forms.Application.DoEvents();
+            }
+            System.Windows.Forms.Application.DoEvents();
         }
     }
 
@@ -498,9 +559,27 @@ namespace CPPHelpers
 
         public static String PathRelativePathTo_File(String pszFile1, String pszFile2)
         {
-            StringBuilder dummy = new StringBuilder(MAX_PATH);
-            PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Archive, PathCanonicalize(pszFile2), FileAttributes.Archive);
-            return PathCanonicalize(dummy.ToString());
+            //StringBuilder dummy = new StringBuilder(MAX_PATH);
+            //PathRelativePathTo(dummy, PathCanonicalize(pszFile1), FileAttributes.Directory, PathCanonicalize(pszFile2), FileAttributes.Archive);
+            //return dummy.ToString();
+            if (String.IsNullOrEmpty(pszFile1)) throw new ArgumentNullException("fromPath");
+            if (String.IsNullOrEmpty(pszFile2)) throw new ArgumentNullException("toPath");
+            if (IsFolder(pszFile1) && !pszFile1.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                pszFile1 += Path.DirectorySeparatorChar.ToString();
+            }
+            if (IsFolder(pszFile2) && !pszFile2.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                pszFile2 += Path.DirectorySeparatorChar.ToString();
+            }
+            Uri fromUri = new Uri(pszFile1);
+            Uri toUri = new Uri(pszFile2);
+
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            return relativePath.Replace('/', Path.DirectorySeparatorChar);
+
         }
 
         public static String PathRelativePathTo_Folder(String pszFile1, String pszFile2)
@@ -522,9 +601,9 @@ namespace CPPHelpers
             if (Path.IsPathRooted(tmp))
             {
                 tmp = new DirectoryInfo(tmp).FullName;
-                SHLWAPI.PathCanonicalize(dummy, tmp);
-                RetVal = dummy.ToString();
             }
+            SHLWAPI.PathCanonicalize(dummy, tmp);
+            RetVal = dummy.ToString();
             return RetVal;
         }
 

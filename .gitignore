@@ -3,8 +3,9 @@
 # visual studio
 *.suo
 *.ncb
+*.user
+
 # build
 bin/
 obj/
-/Images/
-/Miranda/
+*.resources
