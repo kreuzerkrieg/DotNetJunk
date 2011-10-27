@@ -4,8 +4,9 @@
 *.suo
 *.ncb
 *.user
-
 # build
 bin/
 obj/
 *.resources
+/Images/
+/Miranda/
