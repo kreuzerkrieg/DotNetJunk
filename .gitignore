@@ -4,6 +4,10 @@
 *.suo
 *.ncb
 *.user
+*.sdf
+*.opensdf
+*.log
+*.ipch
 # build
 bin/
 obj/
