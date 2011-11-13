@@ -1,7 +1,7 @@
 #pragma once
 
 class ISO3166_API iso3166_country
-{
+{	
 private:
 	iso3166_country(
 		void
@@ -22,6 +22,8 @@ public:
 		void
 		);
 	const wstring& get_alpha_3(
+		) const;
+	const unsigned short get_numeric(
 		) const;
 private:
 	const iso3166_entry							&m_entry;

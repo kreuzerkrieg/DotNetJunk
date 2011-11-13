@@ -27,6 +27,7 @@
 #include <tuple>
 #include <vector>
 #include <assert.h>
+#include <boost\serialization\access.hpp>
 #include <boost\algorithm\string.hpp>
 #include <boost\lexical_cast.hpp>
 

@@ -1,12 +1,45 @@
 #pragma once
-#include "geo_item.h"
+
+
+class ip_geo_item;
+namespace boost
+{ 
+	namespace serialization 
+	{
+		template<class Archive> inline void save_construct_data(
+			Archive & ar, 
+			const ip_geo_item * t, 
+			const unsigned int file_version
+			);
+	}
+}
+
+class geo_item;
+
 class ISO3166_API ip_geo_item
 {
+private:
+	// serialization friends
+	friend class boost::serialization::access;
+	template<class Archive> friend void boost::serialization::save_construct_data(
+		Archive & ar, 
+		const ip_geo_item * t, 
+		const unsigned int file_version
+		);
+	template<class Archive> void serialize(Archive &ar, const unsigned int file_version)
+	{
+		ar & m_start_ip
+			& m_end_ip
+			& m_connection_type
+			& m_isp_name;
+	}
 public:
 	ip_geo_item(
-		geo_item &g_item
+		const geo_item &g_item
 		);
-	virtual ~ip_geo_item(void);
+	virtual ~ip_geo_item(
+		void
+		);
 	void set_start_ip(
 		const wstring &ip
 		);
@@ -48,3 +81,32 @@ public:
 	const geo_item	&m_geo_item;
 };
 
+namespace boost
+{
+	namespace serialization
+	{
+		template<class Archive> inline void save_construct_data(
+			Archive & ar,
+			const ip_geo_item * t,
+			const unsigned int file_version
+			)
+		{
+			unsigned int g_item = t->m_geo_item.get_hash();
+			// save data required to construct instance
+			ar << g_item;
+		}
+
+		template<class Archive> inline void load_construct_data(
+			Archive & ar, 
+			ip_geo_item * t, 
+			const unsigned int file_version
+			)
+		{
+			// retrieve data from archive required to construct new instance
+			unsigned int g_item;
+			ar >> g_item;
+			// invoke inplace constructor to initialize instance of my_class
+			::new(t)ip_geo_item(g_item);
+		}
+	}
+}

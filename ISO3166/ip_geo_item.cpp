@@ -3,7 +3,7 @@
 #include "iso3166_country_data.h"
 
 ip_geo_item::ip_geo_item(
-	geo_item &g_item
+	const geo_item &g_item
 	):
 m_geo_item((iso3166_country_data::instance().get_geo_item(g_item)))
 {

@@ -2,7 +2,7 @@
 #include "critical_section.h"
 #include "iso3166_country.h"
 #include "geo_item.h"
-class iso3166_country_data
+class ISO3166_API iso3166_country_data
 {
 private:
 	iso3166_country_data(
@@ -31,6 +31,8 @@ public:
 	const geo_item& get_geo_item(
 		const geo_item &item
 		);
+	const map <unsigned int, geo_item>& get_country_map(
+		) const;
 private:
 	static iso3166_country_data					*m_instance;
 	static critical_section						m_cs;

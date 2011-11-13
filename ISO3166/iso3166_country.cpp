@@ -59,3 +59,9 @@ const wstring& iso3166_country::get_alpha_3(
 {
 	return m_alpha_3;
 }
+
+const unsigned short iso3166_country::get_numeric(
+		) const
+{
+	return m_numeric;
+}

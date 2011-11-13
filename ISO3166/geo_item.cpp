@@ -56,9 +56,6 @@ unsigned int geo_item::get_hash(
 		boost::lexical_cast<string>(m_longitude),
 		ret_val);
 	ret_val = get_token_fingerprint(
-		boost::lexical_cast<string>(m_country_code),
-		ret_val);
-	ret_val = get_token_fingerprint(
 		boost::lexical_cast<string>(m_region_code),
 		ret_val);
 	ret_val = get_token_fingerprint(

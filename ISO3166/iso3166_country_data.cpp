@@ -149,3 +149,9 @@ const iso3166_country_data::iso3166_entry& iso3166_country_data::get_empty_count
 {
 	return m_empty_country;
 }
+
+const map <unsigned int, geo_item>& iso3166_country_data::get_country_map(
+	) const
+{
+	return m_geo_items_map;
+}
