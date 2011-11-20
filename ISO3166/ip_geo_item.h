@@ -37,6 +37,9 @@ public:
 	ip_geo_item(
 		const geo_item &g_item
 		);
+	ip_geo_item(
+		unsigned int hash
+		);
 	virtual ~ip_geo_item(
 		void
 		);

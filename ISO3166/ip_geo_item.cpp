@@ -9,6 +9,13 @@ m_geo_item((iso3166_country_data::instance().get_geo_item(g_item)))
 {
 }
 
+ip_geo_item::ip_geo_item(
+		unsigned int hash
+		):
+m_geo_item((iso3166_country_data::instance().get_geo_item_by_hash(hash)))
+{
+}
+
 ip_geo_item::~ip_geo_item(void)
 {
 }

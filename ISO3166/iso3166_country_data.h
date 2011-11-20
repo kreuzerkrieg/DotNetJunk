@@ -31,8 +31,11 @@ public:
 	const geo_item& get_geo_item(
 		const geo_item &item
 		);
-	const map <unsigned int, geo_item>& get_country_map(
+	const geo_item& get_geo_item_by_hash(
+		const unsigned int item
 		) const;
+	map <unsigned int, geo_item>& get_country_map(
+		);
 private:
 	static iso3166_country_data					*m_instance;
 	static critical_section						m_cs;

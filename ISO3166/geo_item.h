@@ -11,6 +11,11 @@ namespace boost
 			const geo_item * t, 
 			const unsigned int file_version
 			);
+		template<class Archive> inline void load_construct_data(
+			Archive & ar, 
+			geo_item * t, 
+			const unsigned int file_version
+			);
 	}
 }
 
@@ -22,6 +27,12 @@ private:
 	template<class Archive> friend void boost::serialization::save_construct_data(
 		Archive & ar, 
 		const geo_item * t, 
+		const unsigned int file_version
+		);
+
+	template<class Archive> friend void boost::serialization::load_construct_data(
+		Archive & ar, 
+		geo_item * t, 
 		const unsigned int file_version
 		);
 	template<class Archive> void serialize(Archive &ar, const unsigned int file_version)

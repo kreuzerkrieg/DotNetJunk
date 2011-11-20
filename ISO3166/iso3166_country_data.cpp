@@ -144,14 +144,28 @@ const geo_item& iso3166_country_data::get_geo_item(
 	else
 		return iter->second;
 }
+
+const geo_item& iso3166_country_data::get_geo_item_by_hash(
+	const unsigned int item
+	) const
+{
+	map	<unsigned int, geo_item>::const_iterator iter = m_geo_items_map.find(item);
+	if (iter == m_geo_items_map.end())
+	{
+		throw std::exception("geo item not found");
+	}
+	else
+		return iter->second;
+}
+
 const iso3166_country_data::iso3166_entry& iso3166_country_data::get_empty_country(
 	) const
 {
 	return m_empty_country;
 }
 
-const map <unsigned int, geo_item>& iso3166_country_data::get_country_map(
-	) const
+map <unsigned int, geo_item>& iso3166_country_data::get_country_map(
+	)
 {
 	return m_geo_items_map;
 }
