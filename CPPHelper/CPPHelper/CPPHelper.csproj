@@ -69,6 +69,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -76,15 +77,17 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BuildCallbacks.cs" />
+    <Compile Include="BuildOperations.cs" />
     <Compile Include="CanonicalizeIncludes.cs" />
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IncludesRemover.cs" />
+    <Compile Include="LinkCleaner.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="PCHOrganizer.cs" />
+    <Compile Include="ProjectDependencyRebuilder.cs" />
     <Compile Include="Resources\PCHData.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
