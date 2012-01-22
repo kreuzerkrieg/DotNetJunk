@@ -67,8 +67,9 @@ namespace CPPHelpers
 
         public static VCFileConfiguration GetCurrentFileConfiguration(VCFile oFile)
         {
-            String sActiveConfig = ((ProjectItem)oFile.Object).ConfigurationManager.ActiveConfiguration.ConfigurationName;
-            VCFileConfiguration oActiveConfig = (VCFileConfiguration)((IVCCollection)oFile.FileConfigurations).Item(sActiveConfig);
+            String ConfigName = ((ProjectItem)oFile.Object).ConfigurationManager.ActiveConfiguration.ConfigurationName;
+            String PlatformName = ((ProjectItem)oFile.Object).ConfigurationManager.ActiveConfiguration.PlatformName;
+            VCFileConfiguration oActiveConfig = (VCFileConfiguration)((IVCCollection)oFile.FileConfigurations).Item(ConfigName+"|"+PlatformName);
             return oActiveConfig;
         }
 
@@ -135,7 +136,7 @@ namespace CPPHelpers
             try
             {
                 List<DirectoryInfo> Includes = GetDefaultIncludePaths(oProjConfig);
-                Includes.Add(new DirectoryInfo(@"f:\Development\AC_SERVER_4_8_1\3rdParty\"));
+                Includes.Add(new DirectoryInfo(@"c:\Program Files\boost\"));
                 StringComparer invICCmp = StringComparer.InvariantCultureIgnoreCase;
 
                 List<String> Prefixes = new List<String>(Includes.Count);
