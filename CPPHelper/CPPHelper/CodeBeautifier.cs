@@ -19,7 +19,7 @@ namespace CPPHelper
             selection.SelectAll();
             String source = selection.Text;
             AStyleInterface AStyle = new AStyleInterface();
-            String formattedSource = AStyle.FormatSource(source, "");
+            String formattedSource = AStyle.FormatSource(source, "mode=c -A1 -C -w -f -p -U -xd -j -k1 -W1");
             if (formattedSource == String.Empty)
             {
                 throw new Exception("Cannot format " + oItem.Name);
